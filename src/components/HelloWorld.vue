@@ -12,7 +12,7 @@
 
       <v-col class="mb-4">
         <h1 class="display-2 font-weight-bold mb-3">
-          Welcome to Vuetify
+          {{ user }}
         </h1>
 
         <p class="subheading font-weight-regular">
@@ -93,6 +93,8 @@
 
 <script lang="ts">
   import Vue from 'vue'
+import { User } from '../model/User'
+import { DAOFactoryFirebase } from '../dao/firebase/DAOFactoryFirebase';
 
   export default Vue.extend({
     name: 'HelloWorld',
@@ -148,6 +150,18 @@
           href: 'https://vuetifyjs.com/getting-started/frequently-asked-questions',
         },
       ],
+      user : new User('asd', 'asd')
     }),
+
+    methods : {
+      async getUser(){
+        this.user = await User.find('3vbxro7jNyYyBzLLhujJv6DdC8y1');
+      }
+    },
+
+    created() {
+      this.getUser();
+    }
+
   })
 </script>
