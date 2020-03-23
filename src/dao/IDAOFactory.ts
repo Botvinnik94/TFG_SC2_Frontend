@@ -1,6 +1,8 @@
-import { IUserDAO } from './IUserDAO';
+import { AbstractUserDAO } from './AbstractUserDAO';
+import { AbstractBotDAO } from './AbstractBotDAO';
 
 export interface IDAOFactory {
 
-    getUserDAO(): IUserDAO
+    getUserDAO(): AbstractUserDAO
+    getBotDAO(): AbstractBotDAO
 }

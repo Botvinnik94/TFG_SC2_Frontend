@@ -1,20 +1,43 @@
-import { IUserDAO } from '../IUserDAO'
+import { AbstractUserDAO } from '../AbstractUserDAO'
 import { User } from '../../model/User'
 import { Db } from './Db'
 
-export class FirebaseUserDAO implements IUserDAO {
-
-    async find(id: string): Promise<User> {
-
+export class FirebaseUserDAO extends AbstractUserDAO {
+    
+    async findOne(id: string): Promise<User> {
         try {
-            const result = await Db.collection('users').doc(id).get();
+            const snapshot = await Db.collection('users')
+                                    .doc(id)
+                                    .get();
             
-            const user = new User(result.id, result.data()?.name);
-            return user;
+            return User.build(snapshot.data()?.name, snapshot.id, snapshot.data()?.avatar);
         }
         catch(error){
-            throw new Error(error)
+            throw new Error(error);    
         }
+    }
+
+    async find(filter = '', startAt = 0, endAt = Number.MAX_VALUE): Promise<User[]> {
+
+        try {
+            const snapshots = await Db.collection('users')
+                                    .where('name', '>=', filter)
+//                                    .orderBy('name')
+//                                    .startAt(startAt)
+//                                    .endAt(endAt)
+                                    .get();
+            
+            const users: User[] = [];
+            snapshots.forEach( snapshot => {
+                users.push(User.build(snapshot.data()?.name, snapshot.id, snapshot.data()?.avatar));
+            })
+
+            return users;
+        }
+        catch(error){
+            throw new Error(error);    
+        }
+
     }
 
     create(user: User): Promise<void> {

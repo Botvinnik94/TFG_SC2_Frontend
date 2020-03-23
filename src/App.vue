@@ -38,24 +38,44 @@
     </v-app-bar>
 
     <v-content>
-      <HelloWorld/>
+      <v-card>
+        <v-text-field
+            v-model="name"
+            label="Outlined"
+            outlined
+        ></v-text-field>
+        <v-btn @click="find">buscar</v-btn>
+        <v-btn @click="add">add</v-btn>
+      </v-card>
+      <p>{{ result }}</p>
     </v-content>
   </v-app>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
-import HelloWorld from './components/HelloWorld.vue';
+import { AbstractUserDAO } from './dao/AbstractUserDAO';
+import { Container } from './dao/Container';
+import { PersistenceType } from './dao/PersistenceType';
+import { User } from './model/User';
 
 export default Vue.extend({
   name: 'App',
 
-  components: {
-    HelloWorld,
-  },
-
   data: () => ({
-    //
+    name : '',
+    result: [],
+    dao: Container.getDAOFactory(PersistenceType.Mock).getUserDAO()
   }),
+
+  methods: {
+    async find() {
+      this.result = await this.dao.find(this.name);
+    },
+
+    add() {
+      this.dao.create(User.build(this.name));
+    }
+  }
 });
 </script>

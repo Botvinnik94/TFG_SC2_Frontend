@@ -1,21 +1,21 @@
-
-import { PersistenceType } from '@/dao/PersistenceType';
-import { Container } from '@/dao/Container';
-
+import { Bot } from './Bot';
 
 export class User {
   
-    id: string;
+    id: string | undefined = undefined;
     name: string;
+    avatar: string | undefined;
+    bots: Bot[] | undefined;
 
-    constructor(id: string, name: string) {
-        this.id = id;
+    protected constructor(name: string) {
         this.name = name;
     }
 
-    static find(id: string): Promise<User> {
-        return Container.getDAOFactory(PersistenceType.Mock)
-                        .getUserDAO()
-                        .find(id)
+    static build(name: string, id?: string, avatar?: string, bots?: Bot[]): User{
+        const user = new User(name);
+        user.id = id;
+        user.avatar = avatar;
+        user.bots = bots;
+        return user;
     }
 }
