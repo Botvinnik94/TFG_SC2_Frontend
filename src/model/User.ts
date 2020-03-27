@@ -2,7 +2,7 @@ import { Bot } from './Bot';
 
 export class User {
   
-    id: string | undefined = undefined;
+    id: string | undefined;
     name: string;
     avatar: string | undefined;
     bots: Bot[] | undefined;

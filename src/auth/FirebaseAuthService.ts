@@ -6,28 +6,31 @@ import { Auth } from '@/firebase/Auth';
 
 export class FirebaseAuthService extends AbstractAuthService {
 
+
     constructor() {
         super();
-        Auth.onAuthStateChanged( async user => {
-            if(user != null) {
+        Auth.onAuthStateChanged(async firebaseUser => {
+            if(firebaseUser != null) {
                 this.currentUser = await Container.getDAOFactory(PersistenceType.Firestore)
                                                   .getUserDAO()
-                                                  .findOne(user?.uid);
+                                                  .findOne(firebaseUser.uid);
             }
+            else {
+                this.currentUser = null;
+            }
+            this.onAuthStateChanged.emit(this.currentUser);
         })
     }
 
     public async signIn(object: any): Promise<void> {
         if(object != null && object.email != null && object.password != null) {
             try {
-                const userCredential = await Auth.signInWithEmailAndPassword(object.email, object.password);
-                this.currentUser = await this.retrieveUserWithUserCredential(userCredential);
+                await Auth.signInWithEmailAndPassword(object.email, object.password);
             }
             catch(error) {
                 if(error.code === "auth/user-not-found"){
                     if(object.user != null) {
-                        const userCredential = await Auth.createUserWithEmailAndPassword(object.email, object.password);
-                        this.currentUser =await this.createUserWithUserCredential(userCredential, object.user);
+                        await Auth.createUserWithEmailAndPassword(object.email, object.password);
                     }
                     else {
                         throw new Error("User not passed in the parameters for user creation");
@@ -45,11 +48,15 @@ export class FirebaseAuthService extends AbstractAuthService {
 
     public async signOut(): Promise<void> {
         await Auth.signOut()
-        this.currentUser = undefined;
     }
 
-    public isAuthorized(): boolean {
-        return (Auth.currentUser != undefined)
+    public async isAuthorized(): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            const unsubscribe = Auth.onAuthStateChanged(user => {
+                unsubscribe();
+                resolve(true);
+            }, reject);
+        })
     }
 
     public async getAccessToken(): Promise<string> {
@@ -95,7 +102,7 @@ export class FirebaseAuthService extends AbstractAuthService {
     protected async createUserWithUserCredential(userCredential: firebase.auth.UserCredential, user?: User): Promise<User> {
         const userDao = Container.getDAOFactory(PersistenceType.Firestore).getUserDAO();
         if(user == null){
-            user = User.build(userCredential.user?.displayName || '', userCredential.user?.uid)
+            user = User.build(userCredential.user?.displayName || '', userCredential.user?.uid, userCredential.user?.photoURL || undefined)
         }
         else {
             user.id = userCredential.user?.uid;

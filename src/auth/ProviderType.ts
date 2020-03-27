@@ -1,7 +1,7 @@
 export enum ProviderType {
-    FirebaseLocal,
-    FirebaseGoogle,
-    FirebaseTwitter,
-    FirebaseFacebook,
+    Firebase,
+    FirebaseWithGoogle,
+    FirebaseWithTwitter,
+    FirebaseWithFacebook,
     Mock
 }

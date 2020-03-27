@@ -5,49 +5,18 @@
       color="primary"
       dark
     >
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
 
       <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
+      <v-avatar>
+        <img v-if="authService"
+          :src=authService.currentUser.avatar
+        >
+      </v-avatar>
+      <span v-if="authService">{{authService.currentUser.name}}</span>
     </v-app-bar>
 
     <v-content>
-      <v-card>
-        <v-text-field
-            v-model="name"
-            label="Outlined"
-            outlined
-        ></v-text-field>
-        <v-btn @click="find">buscar</v-btn>
-        <v-btn @click="add">add</v-btn>
-      </v-card>
-      <p>{{ result }}</p>
+      <router-view></router-view>
     </v-content>
   </v-app>
 </template>
@@ -58,24 +27,25 @@ import { AbstractUserDAO } from './dao/AbstractUserDAO';
 import { Container } from './dao/Container';
 import { PersistenceType } from './dao/PersistenceType';
 import { User } from './model/User';
+import { App } from './firebase/App';
+import * as firebase from 'firebase';
+import { FirebaseAuthService } from './auth/FirebaseAuthService';
+import { FirebaseGoogleAuthService } from './auth/FirebaseGoogleAuthService'
+import { AuthServiceFactory } from './auth/AuthServiceFactory';
+import { ProviderType } from './auth/ProviderType';
+import { mapGetters } from 'vuex';
 
 export default Vue.extend({
   name: 'App',
 
   data: () => ({
     name : '',
+    email: '',
+    password: '',
     result: [],
-    dao: Container.getDAOFactory(PersistenceType.Mock).getUserDAO()
   }),
 
-  methods: {
-    async find() {
-      this.result = await this.dao.find(this.name);
-    },
+  computed: mapGetters(['authService']),
 
-    add() {
-      this.dao.create(User.build(this.name));
-    }
-  }
 });
 </script>

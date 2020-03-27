@@ -9,13 +9,13 @@ export class AuthServiceFactory {
     public static getAuthService(type: ProviderType): AbstractAuthService {
         
         switch (type) {
-            case ProviderType.FirebaseLocal:
+            case ProviderType.Firebase:
                 return new FirebaseAuthService();
             
-            case ProviderType.FirebaseGoogle:
+            case ProviderType.FirebaseWithGoogle:
                 return new FirebaseGoogleAuthService();
             
-            case ProviderType.FirebaseTwitter:
+            case ProviderType.FirebaseWithTwitter:
                 return new FirebaseTwitterAuthService();
         
             default:

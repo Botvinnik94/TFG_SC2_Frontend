@@ -12,11 +12,10 @@ export class FirebaseGoogleAuthService extends FirebaseAuthService {
         const userCredential = await Auth.signInWithPopup(provider);
         console.log(userCredential)
         try {
-            this.currentUser =  await this.retrieveUserWithUserCredential(userCredential);
-            console.log(this.currentUser);
+            console.log(await this.retrieveUserWithUserCredential(userCredential));
         }
         catch(error){
-            this.currentUser = await this.createUserWithUserCredential(userCredential);
+            await this.createUserWithUserCredential(userCredential);
         }
         finally {
             //return this.currentUser;
