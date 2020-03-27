@@ -7,7 +7,7 @@ export class Container {
 
     static getDAOFactory(type: PersistenceType): IDAOFactory {
         switch (type) {
-            case PersistenceType.Firebase:
+            case PersistenceType.Firestore:
                 return new DAOFactoryFirebase();
 
             case PersistenceType.Mock:

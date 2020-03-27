@@ -16,21 +16,20 @@ export class MockUserDAO extends AbstractUserDAO{
 
     findOne(id: string): Promise<User> {
         return new Promise((resolve, reject) => {
-            for (let index = 0; index < this.users.length; index++) {
-                if(this.users[index].id == id){
-                    const user = this.users[index];
-                    this.getBotsFromUser(id)
-                    .then( bots => {
-                        user.bots = bots;
-                        resolve(user);
-                    })
-                    .catch(error => {
-                        reject(error);
-                    });
-                    return;
-                }
+            const user = this.users.find( user => user.id === id);
+            if(user == null) {
+                reject('User not found');
             }
-            reject('User not found');
+            else {
+                this.getBotsFromUser(id)
+                .then( bots => {
+                    user.bots = bots;
+                    resolve(user);
+                })
+                .catch( error => {
+                    reject(error);
+                })
+            }
         });
     }
 
@@ -40,12 +39,9 @@ export class MockUserDAO extends AbstractUserDAO{
                 resolve(this.users);
             }
             else{
-                const results: User[] = [];
-                this.users.forEach(async (user) => {
-                    if(user.name.includes(filter)){
-                        user.bots = await this.getBotsFromUser(user.id ?? '');
-                        results.push(user);
-                    }
+                const results = this.users.filter( user => user.name.includes(filter));
+                results.forEach( async user => {
+                    user.bots = await this.getBotsFromUser(user.id ?? '');
                 })
                 resolve(results);
             }
@@ -59,6 +55,7 @@ export class MockUserDAO extends AbstractUserDAO{
             resolve();
         });
     }
+
     update(user: User): Promise<void> {
         return new Promise((resolve, reject) => {
             let result = this.users.find( value => {
@@ -74,6 +71,7 @@ export class MockUserDAO extends AbstractUserDAO{
             }
         });
     }
+
     delete(id: string): Promise<void> {
         return new Promise((resolve, reject) => {
             for (let index = 0; index < this.users.length; index++) {
