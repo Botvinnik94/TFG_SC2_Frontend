@@ -54,7 +54,7 @@ export class FirebaseAuthService extends AbstractAuthService {
         return new Promise((resolve, reject) => {
             const unsubscribe = Auth.onAuthStateChanged(user => {
                 unsubscribe();
-                resolve(true);
+                user ? resolve(true) : resolve(false);
             }, reject);
         })
     }

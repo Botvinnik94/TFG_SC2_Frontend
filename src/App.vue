@@ -8,11 +8,11 @@
 
       <v-spacer></v-spacer>
       <v-avatar>
-        <img v-if="authService"
+        <img v-if="authService && authService.currentUser"
           :src=authService.currentUser.avatar
         >
       </v-avatar>
-      <span v-if="authService">{{authService.currentUser.name}}</span>
+      <span v-if="authService && authService.currentUser">{{authService.currentUser.name}}</span>
     </v-app-bar>
 
     <v-content>
