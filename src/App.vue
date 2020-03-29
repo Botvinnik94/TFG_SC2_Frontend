@@ -7,12 +7,14 @@
     >
 
       <v-spacer></v-spacer>
-      <v-avatar>
-        <img v-if="authService && authService.currentUser"
-          :src=authService.currentUser.avatar
-        >
-      </v-avatar>
-      <span v-if="authService && authService.currentUser">{{authService.currentUser.name}}</span>
+      <v-btn v-if="user" text @click="goToProfile">
+        <v-avatar left>
+            <img
+            :src=user.avatar
+            >
+        </v-avatar>
+        {{ user.name }}
+      </v-btn>
     </v-app-bar>
 
     <v-content>
@@ -33,7 +35,7 @@ import { FirebaseAuthService } from './auth/FirebaseAuthService';
 import { FirebaseGoogleAuthService } from './auth/FirebaseGoogleAuthService'
 import { AuthServiceFactory } from './auth/AuthServiceFactory';
 import { ProviderType } from './auth/ProviderType';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 export default Vue.extend({
   name: 'App',
@@ -42,10 +44,22 @@ export default Vue.extend({
     name : '',
     email: '',
     password: '',
-    result: [],
+    user: null as User | undefined | null,
   }),
 
   computed: mapGetters(['authService']),
+
+  mounted() {
+    this.authService.onAuthStateChanged.subscribe( (user: User | undefined | null) => {
+        this.user = user;
+    })
+  },
+
+  methods: {
+      goToProfile() {
+          this.$router.push('/about');
+      }
+  }
 
 });
 </script>

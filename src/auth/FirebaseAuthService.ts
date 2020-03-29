@@ -11,7 +11,7 @@ export class FirebaseAuthService extends AbstractAuthService {
         super();
         Auth.onAuthStateChanged(async firebaseUser => {
             if(firebaseUser != null) {
-                this.currentUser = await Container.getDAOFactory(PersistenceType.Firestore)
+                this.currentUser = await Container.getDAOFactory(PersistenceType.Firebase)
                                                   .getUserDAO()
                                                   .findOne(firebaseUser.uid);
             }
@@ -95,12 +95,12 @@ export class FirebaseAuthService extends AbstractAuthService {
     // Helpers
 
     protected async retrieveUserWithUserCredential(userCredential: firebase.auth.UserCredential): Promise<User> {
-        const userDao = Container.getDAOFactory(PersistenceType.Firestore).getUserDAO();
+        const userDao = Container.getDAOFactory(PersistenceType.Firebase).getUserDAO();
         return await userDao.findOne(userCredential.user?.uid || '');
     }
 
     protected async createUserWithUserCredential(userCredential: firebase.auth.UserCredential, user?: User): Promise<User> {
-        const userDao = Container.getDAOFactory(PersistenceType.Firestore).getUserDAO();
+        const userDao = Container.getDAOFactory(PersistenceType.Firebase).getUserDAO();
         if(user == null){
             user = User.build(userCredential.user?.displayName || '', userCredential.user?.uid, userCredential.user?.photoURL || undefined)
         }

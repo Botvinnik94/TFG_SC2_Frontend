@@ -1,4 +1,4 @@
 export enum PersistenceType {
-    Firestore,
+    Firebase,
     Mock
 }

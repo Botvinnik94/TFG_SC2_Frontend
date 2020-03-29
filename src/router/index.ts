@@ -2,8 +2,8 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import store from '@/store'
-import { AuthServiceFactory } from '@/auth/AuthServiceFactory'
 import { ProviderType } from '@/auth/ProviderType'
+import { AuthServiceFactory } from '@/auth/AuthServiceFactory'
 
 Vue.use(VueRouter)
 
@@ -41,10 +41,8 @@ const router = new VueRouter({
 
 router.beforeEach(async (to, from, next) => {
   if(to.matched.some(record => record.meta.requiresAuth)){
-    const authService = AuthServiceFactory.getAuthService(ProviderType.Firebase);
     console.log('Auth guard')
-    console.log(await authService.isAuthorized())
-    if(!await authService.isAuthorized()){
+    if(!await store.getters.authService?.isAuthorized()){
       console.log('Forbidden')
       next({
         path: '/login'
