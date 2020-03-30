@@ -17,9 +17,16 @@
                         <v-btn primary large block @click="signInWithEmail">Login</v-btn>
                         </v-card-actions>
                         </v-form>
+                        <v-card-text>
                         <v-btn icon large @click="signInWithGoogle">
                             <v-img src='../assets/google_signin_buttons/web/1x/btn_google_signin_dark_normal_web.png'></v-img>
                         </v-btn>
+                        </v-card-text>
+                        <v-card-text>
+                        <v-btn icon large @click="signInWithTwitter">
+                            <v-img src='../assets/sign-in-with-twitter.png'></v-img>
+                        </v-btn>
+                        </v-card-text>
                     </v-card>
                     </v-container>
                 </v-flex>
@@ -50,6 +57,17 @@ export default Vue.extend({
 
         async signInWithGoogle() {
             this.createAuthService(ProviderType.FirebaseWithGoogle);
+            try {
+                await this.authService.signIn();
+                this.$router.push('/');
+            }
+            catch(error) {
+                console.error(error)
+            }
+        },
+
+        async signInWithTwitter() {
+            this.createAuthService(ProviderType.FirebaseWithTwitter);
             try {
                 await this.authService.signIn();
                 this.$router.push('/');
