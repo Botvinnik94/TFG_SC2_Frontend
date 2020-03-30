@@ -17,7 +17,11 @@
 
                 <v-spacer></v-spacer>
 
-                <v-btn icon v-if="this.authService.currentUser && this.authService.currentUser.id === user.id">
+                <v-btn 
+                    icon 
+                    v-if="this.authService.currentUser && this.authService.currentUser.id === user.id"
+                    @click="goToBotCreation"
+                >
                     <v-icon>mdi-plus</v-icon>
                 </v-btn>
             </v-toolbar>
@@ -67,8 +71,13 @@ export default Vue.extend({
                 this.user = await Container.getDAOFactory(PersistenceType.Firebase).getUserDAO().findOne(this.id);
             }
             catch(error) {
+                // TODO: go to 404
                 console.log()
             }
+        },
+
+        goToBotCreation() {
+            this.$router.push('/bot-creation');
         }
 
     }
