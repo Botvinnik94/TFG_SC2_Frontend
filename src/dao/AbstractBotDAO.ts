@@ -5,7 +5,7 @@ import { IBotFilter } from '@/model/IBotFilter';
 
 export abstract class AbstractBotDAO implements IWritable<Bot>, IReadable<IBotFilter, Bot> {
 
-    abstract create(object: Bot): Promise<void>    
+    abstract create(object: Bot): Promise<string>    
     abstract update(object: Bot): Promise<void>
     abstract delete(id: string): Promise<void>
     abstract findOne(id: string): Promise<Bot>

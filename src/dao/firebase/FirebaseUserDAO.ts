@@ -1,6 +1,7 @@
 import { AbstractUserDAO } from '../AbstractUserDAO'
 import { User } from '../../model/User'
 import { Db } from '../../firebase/Db'
+import { Bot } from '@/model/Bot';
 
 export class FirebaseUserDAO extends AbstractUserDAO {
     
@@ -11,7 +12,7 @@ export class FirebaseUserDAO extends AbstractUserDAO {
                                 .get();
         
         if(snapshot.exists) {
-            return User.build(snapshot.data()?.name, snapshot.id, snapshot.data()?.avatar);
+            return User.build(snapshot.data()?.name, snapshot.id, snapshot.data()?.avatar, snapshot.data()?.bots);
         }
         else {
             throw new Error("User not found in DB");
@@ -30,7 +31,7 @@ export class FirebaseUserDAO extends AbstractUserDAO {
             
             const users: User[] = [];
             snapshots.forEach( snapshot => {
-                users.push(User.build(snapshot.data()?.name, snapshot.id, snapshot.data()?.avatar));
+                users.push(User.build(snapshot.data()?.name, snapshot.id, snapshot.data()?.avatar, snapshot.data()?.bots));
             })
 
             return users;
@@ -41,14 +42,25 @@ export class FirebaseUserDAO extends AbstractUserDAO {
 
     }
 
-    async create(user: User): Promise<void> {
+    async create(user: User): Promise<string> {
 
+        const target = this.assignDefined({}, user);
+        target.bots = target.bots?.map((bot: Bot) => {
+            return this.assignDefined({}, bot)
+        });
         await Db.collection('users').doc(user.id).set(this.assignDefined({}, user));
+        return user.id;
 
     }
 
-    update(user: User): Promise<void> {
-        throw new Error("Method not implemented.")
+    async update(user: User): Promise<void> {
+        
+        const target = this.assignDefined({}, user);
+        target.bots = target.bots?.map((bot: Bot) => {
+            return this.assignDefined({}, bot)
+        });
+        await Db.collection('users').doc(user.id).update(this.assignDefined({}, target));
+
     }
     
     delete(id: string): Promise<void> {
