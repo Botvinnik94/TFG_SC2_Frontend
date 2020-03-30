@@ -57,7 +57,7 @@ export default Vue.extend({
 
   methods: {
       goToProfile() {
-          this.$router.push('/about');
+          this.$router.push(`/user/${this.user?.id}`);
       }
   }
 
