@@ -5,16 +5,46 @@
       color="primary"
       dark
     >
-
-      <v-spacer></v-spacer>
-      <v-btn v-if="user" text @click="goToProfile">
-        <v-avatar left>
-            <img
-            :src=user.avatar
-            >
-        </v-avatar>
-        {{ user.name }}
+      <v-btn @click="goToHome" height="50" text>
+        <v-img
+          class="shrink mr-2"
+          contain
+          src="@/assets/logo.svg"
+          transition="scale-transition"
+          width="40"
+        ></v-img>
       </v-btn>
+      <v-spacer></v-spacer>
+      <v-menu
+        offset-y 
+        close-on-click 
+        close-on-content-click 
+        transition="slide-y-transition"
+      >
+        <template v-slot:activator="{ on }">
+          <v-btn v-if="user" text v-on="on" height="50">
+            <v-avatar left>
+                <img
+                :src=user.avatar
+                >
+            </v-avatar>
+            {{ user.name }}
+          </v-btn>
+          <v-btn v-else @click="goToSignIn">
+            Sign In
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item
+            v-for="(item, i) in profileMenuItems"
+            :key="i"
+            @click="item.action"
+          >
+            <v-icon>{{ item.icon }}</v-icon>
+            <v-list-item-title>{{ item.name }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </v-app-bar>
 
     <v-content>
@@ -45,6 +75,19 @@ export default Vue.extend({
     email: '',
     password: '',
     user: null as User | undefined | null,
+    profileMenuItems: 
+    [
+      {
+        name: 'Profile',
+        icon: 'mdi-account',
+        action: undefined
+      },
+      {
+        name: 'Sign out',
+        icon: 'mdi-logout',
+        action: undefined
+      }
+    ]
   }),
 
   computed: mapGetters(['authService']),
@@ -53,12 +96,27 @@ export default Vue.extend({
     this.authService.onAuthStateChanged.subscribe( (user: User | undefined | null) => {
         this.user = user;
     })
+
+    this.profileMenuItems[0].action = this.goToProfile;
+    this.profileMenuItems[1].action = this.signOut
   },
 
   methods: {
       goToProfile() {
           this.$router.push(`/user/${this.user?.id}`);
-      }
+      },
+
+      goToSignIn() {
+          this.$router.push('/login');
+      },
+
+      goToHome(){
+          this.$router.push('/');
+      },
+
+      async signOut() {
+        await this.authService.signOut();
+      },
   }
 
 });
