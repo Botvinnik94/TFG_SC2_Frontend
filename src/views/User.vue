@@ -25,7 +25,15 @@
                     <v-icon>mdi-plus</v-icon>
                 </v-btn>
             </v-toolbar>
-            <v-list>
+            <v-list three-line>
+                <v-list-item
+                v-for="(bot, i) in user.bots"
+                :key="i"
+                @click="goToBotView(bot)"
+                >
+                    <v-list-item-title>{{ bot.race }}</v-list-item-title>
+                    <v-list-item-title>{{ bot.name }}</v-list-item-title>
+                </v-list-item>       
             </v-list>
         </v-card>
     </div>  
@@ -38,6 +46,7 @@ import router from '../router'
 import { Container } from '../dao/Container'
 import { PersistenceType } from '../dao/PersistenceType'
 import { User } from '@/model/User'
+import { Bot } from '@/model/Bot'
 
 export default Vue.extend({
     name: "User",
@@ -54,6 +63,7 @@ export default Vue.extend({
     async created() {
         this.id = this.$route.params.id;
         await this.getUser();
+        console.log(this.user)
     },
 
     // When the user navigates from /user/foo to /user/bar, the same component instance will be reused
@@ -78,8 +88,11 @@ export default Vue.extend({
 
         goToBotCreation() {
             this.$router.push('/bot-creation');
-        }
+        },
 
+        goToBotView(bot: Bot) {
+            console.log('Go to bot view:', bot);
+        }
     }
 
 })

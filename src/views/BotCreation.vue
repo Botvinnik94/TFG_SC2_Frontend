@@ -1,5 +1,5 @@
 <template>
-    <v-card>
+    <v-card :loading="loading">
         <v-card-title>
             Upload a bot
         </v-card-title>
@@ -48,6 +48,15 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { mapGetters } from 'vuex'
+import { LocalBotUploader } from '@/features/BotUploader/LocalBotUploader'
+import { BotValidatorFactory } from '@/features/BotValidator/BotValidatorFactory'
+import { BotValidatorServiceType } from '../features/BotValidator/BotValidatorServiceType'
+import { StorageServiceFactory } from '../storage/StorageServiceFactory'
+import { StorageType } from '../storage/StorageType'
+import { Container } from '../dao/Container'
+import { PersistenceType } from '../dao/PersistenceType'
+
 export default Vue.extend({
 
     name: "BotCreation",
@@ -66,18 +75,28 @@ export default Vue.extend({
           "Protoss",
           "Random"
       ],
+      loading: false
     }),
 
+    computed: mapGetters(['authService']),
+
     methods: {
-      submit () {
+      async submit () {
         if(this.$refs.form.validate()) {
-            console.log("Submit");
+            this.loading = true;
+            const botUploader = new LocalBotUploader(BotValidatorFactory.getBotValidator(BotValidatorServiceType.Mock),
+                                                     StorageServiceFactory.getStorageService(StorageType.Firebase),
+                                                     Container.getDAOFactory(PersistenceType.Firebase).getBotDAO());
+            
+            const bot = await botUploader.uploadBot(this.name, this.race, this.file, this.authService.currentUser);
+            console.log(bot);
+            this.loading = false;
         }
       },
 
       changeSelectedFile (file: File) {
           this.file = file;
-      }
+      },
     },
 })
 </script>
