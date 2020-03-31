@@ -12,7 +12,11 @@ export class FirebaseUserDAO extends AbstractUserDAO {
                                 .get();
         
         if(snapshot.exists) {
-            return User.build(snapshot.data()?.name, snapshot.id, snapshot.data()?.avatar, snapshot.data()?.bots);
+            return User.build(  snapshot.data()?.name, 
+                                snapshot.id, 
+                                snapshot.data()?.avatar,
+                                snapshot.data()?.twitter,
+                                snapshot.data()?.bots);
         }
         else {
             throw new Error("User not found in DB");
@@ -31,7 +35,11 @@ export class FirebaseUserDAO extends AbstractUserDAO {
             
             const users: User[] = [];
             snapshots.forEach( snapshot => {
-                users.push(User.build(snapshot.data()?.name, snapshot.id, snapshot.data()?.avatar, snapshot.data()?.bots));
+                users.push(User.build(  snapshot.data()?.name, 
+                                        snapshot.id, 
+                                        snapshot.data()?.avatar,
+                                        snapshot.data()?.twitter,
+                                        snapshot.data()?.bots));
             })
 
             return users;
@@ -45,6 +53,7 @@ export class FirebaseUserDAO extends AbstractUserDAO {
     async create(user: User): Promise<string> {
 
         const target = this.assignDefined({}, user);
+        console.log(target)
         target.bots = target.bots?.map((bot: Bot) => {
             return this.assignDefined({}, bot)
         });

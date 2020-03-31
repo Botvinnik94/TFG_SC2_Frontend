@@ -5,6 +5,7 @@ export class User {
     id: string;
     name: string;
     avatar: string | undefined;
+    twitter: string | undefined;
     bots: Bot[] | undefined;
 
     protected constructor(name: string, id: string) {
@@ -12,9 +13,10 @@ export class User {
         this.id = id;
     }
 
-    static build(name: string, id: string, avatar?: string, bots?: Bot[]): User{
+    static build(name: string, id: string, avatar?: string, twitter?: string, bots?: Bot[]): User{
         const user = new User(name, id);
         user.avatar = avatar;
+        user.twitter = twitter;
         user.bots = bots;
         return user;
     }

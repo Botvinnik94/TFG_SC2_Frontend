@@ -9,6 +9,9 @@
                 </v-avatar>
                 {{user.name}}
             </v-card-title>
+            <v-card-subtitle v-if="user.twitter">
+                @{{ user.twitter }}
+            </v-card-subtitle>
             <v-toolbar
                 color="indigo"
                 dark
