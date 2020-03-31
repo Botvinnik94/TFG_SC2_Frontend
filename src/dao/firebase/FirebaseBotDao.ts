@@ -33,13 +33,16 @@ export class FirebaseBotDAO extends AbstractBotDAO {
 
         const snapshot = await Db.collection('bots').doc(id).get();
         if(snapshot.exists) {
-            return Bot.build(   
-                                snapshot.data()?.name, 
-                                snapshot.data()?.uid, 
-                                snapshot.data()?.script, 
-                                snapshot.data()?.race,
-                                snapshot.id
-                            )
+            const bot = Bot.build(   
+                                    snapshot.data()?.name, 
+                                    snapshot.data()?.uid, 
+                                    snapshot.data()?.script, 
+                                    snapshot.data()?.race,
+                                    snapshot.id
+                                )
+            bot.username = snapshot.data()?.username;
+            bot.useravatar = snapshot.data()?.useravatar;
+            return bot;
         }
         else {
             throw new Error("Bot not found in DB")

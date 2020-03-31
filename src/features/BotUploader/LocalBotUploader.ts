@@ -33,8 +33,12 @@ export class LocalBotUploader implements IBotUploader{
         await this.validatorService.validate(script);
         const scriptURL = await this.storageService.put(script, `${user.id}/${script.name}`);
         const bot = Bot.build(name, user.id, scriptURL, race);
+        bot.username = user.name;
+        bot.useravatar = user.avatar;
         bot.id = await this.botDAO.create(bot);
         return bot;
+
+        //TODO: try catch, delete from storage if db fails
     }
 
 } 

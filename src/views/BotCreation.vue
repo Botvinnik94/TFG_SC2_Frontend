@@ -40,6 +40,7 @@
                 class="mr-4"
                 @click="submit"
                 >
+                <v-icon left dark>mdi-cloud-upload</v-icon>
                 Submit
             </v-btn>
         </v-card-actions>

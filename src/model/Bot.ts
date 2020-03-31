@@ -3,6 +3,8 @@ export class Bot {
     id: string | undefined;
     name: string;
     uid: string;
+    username: string | undefined;
+    useravatar: string | undefined;
     race: string;
     script: string;
 

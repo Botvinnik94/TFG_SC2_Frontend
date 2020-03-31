@@ -19,6 +19,11 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/User.vue')
   },
   {
+    path: '/bot/:id',
+    name: 'Bot',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Bot.vue')
+  },
+  {
     path: '/bot-creation',
     name: "BotCreation",
     meta: { requiresAuth: true },
