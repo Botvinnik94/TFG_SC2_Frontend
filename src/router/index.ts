@@ -2,8 +2,6 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import store from '@/store'
-import { ProviderType } from '@/auth/ProviderType'
-import { AuthServiceFactory } from '@/auth/AuthServiceFactory'
 
 Vue.use(VueRouter)
 
@@ -31,6 +29,31 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/BotCreation.vue')
+  },
+  {
+    path: '/competition',
+    name: "Competitions",
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/Competitions.vue')
+  },
+  {
+    path: '/competition/:id',
+    name: "Competition",
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/Competition.vue')
+  },
+  {
+    path: '/competition-creation',
+    name: "CompetitionCreation",
+    meta: { requiresAuth: true },
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/CompetitionCreation.vue')
   },
   {
     path: '/about',

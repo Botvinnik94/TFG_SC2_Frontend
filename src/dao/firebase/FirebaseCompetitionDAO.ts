@@ -32,8 +32,20 @@ export class FirebaseCompetitionDAO extends AbstractCompetitionDAO {
         await Db.collection('competitions').doc(competitionId).collection('participants').doc(botId).delete();
     }
 
-    findOne(id: string): Promise<Competition> {
-        throw new Error("Method not implemented.");
+    async findOne(id: string): Promise<Competition> {
+        const snapshot = await Db.collection('competitions')
+                                    .withConverter(competitionConverter)
+                                    .doc(id)
+                                    .get();
+
+        const competition = snapshot.data();
+        if(competition) {
+            competition.participants = await this.getParticipantsFromCompetition(id);
+            return competition;
+        }
+        else {
+            throw new Error("Competition not found in DB");
+        }
     }   
 
     async find(filter?: ICompetitionFilter | undefined, startAt?: number | undefined, endAt?: number | undefined): Promise<Competition[]> {
@@ -44,16 +56,7 @@ export class FirebaseCompetitionDAO extends AbstractCompetitionDAO {
         const competitions = [] as Competition[];
         snapshots.docs.forEach(async value => {
             const competition = value.data();
-            const participantsSnapshot = await Db.collection('competitions')
-                                                 .doc(competition.id)
-                                                 .collection('participants')
-                                                 .withConverter(botConverter)
-                                                 .get();
-
-            competition.participants = participantsSnapshot.docs.map( botSnap => {
-                return botSnap.data()
-            });
-
+            competition.participants = await this.getParticipantsFromCompetition(competition.id);
             competitions.push(competition);
         });
 
@@ -75,4 +78,19 @@ export class FirebaseCompetitionDAO extends AbstractCompetitionDAO {
         throw new Error("Method not implemented.");
     }
     
+    // Helpers
+
+    async getParticipantsFromCompetition(competitionId: string): Promise<Bot[]> {
+        const participantsSnapshot = await Db.collection('competitions')
+                                              .doc(competitionId)
+                                              .collection('participants')
+                                              .withConverter(botConverter)
+                                              .get();
+
+        const participants = participantsSnapshot.docs.map( botSnap => {
+            return botSnap.data()
+        });
+
+        return participants;
+    }
 }

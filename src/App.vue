@@ -14,6 +14,15 @@
           width="40"
         ></v-img>
       </v-btn>
+
+      <v-btn @click="goToCompetitions" height="50" text>
+        Competitions
+      </v-btn>
+
+      <v-btn height="50" text>
+        Leaderboards
+      </v-btn>
+
       <v-spacer></v-spacer>
       <v-menu
         offset-y 
@@ -112,6 +121,10 @@ export default Vue.extend({
 
       goToHome(){
           this.$router.push('/');
+      },
+
+      goToCompetitions(){
+          this.$router.push('/competition');
       },
 
       async signOut() {
