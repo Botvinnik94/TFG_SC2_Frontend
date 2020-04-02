@@ -2,21 +2,37 @@ import { AbstractUserDAO } from '../AbstractUserDAO'
 import { User } from '../../model/User'
 import { Db } from '../../firebase/Db'
 import { Bot } from '@/model/Bot';
+import { assignDefined } from '@/Utils/assignDefined'
+
+export const userConverter = {
+    toFirestore(user: User): firebase.firestore.DocumentData {
+        const data = assignDefined({}, user);
+        data.bots = data.bots?.map((bot: Bot) => {
+            return assignDefined({}, bot)
+        })
+        return data;
+    },
+    fromFirestore(
+        snapshot: firebase.firestore.QueryDocumentSnapshot,
+        options: firebase.firestore.SnapshotOptions
+    ): User {
+        const data = snapshot.data(options)!;
+        return new User(data.name, snapshot.id, data.avatar, data.twitter, data.bots)
+    }
+}
 
 export class FirebaseUserDAO extends AbstractUserDAO {
     
     async findOne(id: string): Promise<User> {
 
         const snapshot = await Db.collection('users')
+                                .withConverter(userConverter)
                                 .doc(id)
                                 .get();
         
-        if(snapshot.exists) {
-            return User.build(  snapshot.data()?.name, 
-                                snapshot.id, 
-                                snapshot.data()?.avatar,
-                                snapshot.data()?.twitter,
-                                snapshot.data()?.bots);
+        const user = snapshot.data();
+        if(user) {
+            return user;
         }
         else {
             throw new Error("User not found in DB");
@@ -51,42 +67,32 @@ export class FirebaseUserDAO extends AbstractUserDAO {
     }
 
     async create(user: User): Promise<string> {
-
+/*
         const target = this.assignDefined({}, user);
         console.log(target)
         target.bots = target.bots?.map((bot: Bot) => {
             return this.assignDefined({}, bot)
-        });
-        await Db.collection('users').doc(user.id).set(this.assignDefined({}, user));
+        });*/
+        await Db.collection('users').withConverter(userConverter)
+                                    .doc(user.id)
+                                    .set(user);
         return user.id;
-
     }
 
     async update(user: User): Promise<void> {
-        
+        /*
         const target = this.assignDefined({}, user);
         target.bots = target.bots?.map((bot: Bot) => {
             return this.assignDefined({}, bot)
-        });
-        await Db.collection('users').doc(user.id).update(this.assignDefined({}, target));
-
+        });*/
+        console.log('before update')
+        await Db.collection('users').withConverter(userConverter)
+                                    .doc(user.id)
+                                    .set(user, {merge: true});
+        console.log('after update')
     }
     
     delete(id: string): Promise<void> {
         throw new Error("Method not implemented.")
-    }
-
-    // Helpers
-
-    private assignDefined(target: any, ...sources: any) {
-        for (const source of sources) {
-            for (const key of Object.keys(source)) {
-                const val = source[key];
-                if (val !== undefined) {
-                    target[key] = val;
-                }
-            }
-        }
-        return target;
     }
 }

@@ -10,8 +10,8 @@ export class Match {
     state: "pending" | "ongoing" | "finished";
     result: string;
     winner: "1" | "2" | null;
-    started_at: number | null;
-    finished_at: number | null;
+    startedAt: number | null;
+    finishedAt: number | null;
 
     constructor(id: string,
                 participant1: Bot,
@@ -20,8 +20,8 @@ export class Match {
                 state: "pending" | "ongoing" | "finished",
                 result: string,
                 winner: "1" | "2" | null,
-                started_at: number | null,
-                finished_at: number | null)
+                startedAt: number | null,
+                finishedAt: number | null)
     {
         this.id = id;
         this.participant1 = participant1;
@@ -30,8 +30,8 @@ export class Match {
         this.state = state;
         this.result = result;
         this.winner = winner;
-        this.started_at = started_at;
-        this.finished_at = finished_at;
+        this.startedAt = startedAt;
+        this.finishedAt = finishedAt;
     }
 
 }

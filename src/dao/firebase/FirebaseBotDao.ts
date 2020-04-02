@@ -3,16 +3,31 @@ import { Bot } from '@/model/Bot'
 import { Db } from '@/firebase/Db';
 import { Container } from '../Container';
 import { PersistenceType } from '../PersistenceType';
+import { assignDefined } from '@/Utils/assignDefined'
+
+export const botConverter = {
+    toFirestore(bot: Bot): firebase.firestore.DocumentData {
+        const data = assignDefined({}, bot);
+        return data;
+    },
+    fromFirestore(
+        snapshot: firebase.firestore.QueryDocumentSnapshot,
+        options: firebase.firestore.SnapshotOptions
+    ): Bot {
+        const data = snapshot.data(options)!;
+        return new Bot(data.name, data.uid, data.script, data.race, snapshot.id, data.username, data.useravatar);
+    }
+}
 
 export class FirebaseBotDAO extends AbstractBotDAO {
 
     async create(bot: Bot): Promise<string> {
-        const documentReference = await Db.collection('bots').add(this.assignDefined({}, bot));
+        const documentReference = await Db.collection('bots').withConverter(botConverter).add(bot);
         bot.id = documentReference.id;
         const userDAO = Container.getDAOFactory(PersistenceType.Firebase).getUserDAO();
         const botOwner = await userDAO.findOne(bot.uid);
         if(botOwner.bots == null){
-            botOwner.bots = [{...bot}]
+            botOwner.bots = [bot]
         }
         else {
             botOwner.bots.push(bot)
@@ -31,17 +46,9 @@ export class FirebaseBotDAO extends AbstractBotDAO {
     
     async findOne(id: string): Promise<Bot> {
 
-        const snapshot = await Db.collection('bots').doc(id).get();
-        if(snapshot.exists) {
-            const bot = Bot.build(   
-                                    snapshot.data()?.name, 
-                                    snapshot.data()?.uid, 
-                                    snapshot.data()?.script, 
-                                    snapshot.data()?.race,
-                                    snapshot.id
-                                )
-            bot.username = snapshot.data()?.username;
-            bot.useravatar = snapshot.data()?.useravatar;
+        const snapshot = await Db.collection('bots').withConverter(botConverter).doc(id).get();
+        const bot = snapshot.data();
+        if(bot) {
             return bot;
         }
         else {
@@ -51,18 +58,4 @@ export class FirebaseBotDAO extends AbstractBotDAO {
     find(filter?: import("../../model/IBotFilter").IBotFilter | undefined, startAt?: number | undefined, endAt?: number | undefined): Promise<Bot[]> {
         throw new Error("Method not implemented.");
     }
-
-
-    private assignDefined(target: any, ...sources: any) {
-        for (const source of sources) {
-            for (const key of Object.keys(source)) {
-                const val = source[key];
-                if (val !== undefined) {
-                    target[key] = val;
-                }
-            }
-        }
-        return target;
-    }
-
 }

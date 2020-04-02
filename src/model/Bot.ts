@@ -8,11 +8,14 @@ export class Bot {
     race: string;
     script: string;
 
-    protected constructor(name: string, uid: string, script: string, race: string) {
+    constructor(name: string, uid: string, script: string, race: string, id?: string, username?: string, useravatar?: string) {
         this.name = name;
         this.uid = uid;
         this.script = script;
         this.race = race;
+        this.id = id;
+        this.username = username;
+        this.useravatar = useravatar;
     }
 
     static build(name: string, uid: string, script: string, race: string, id?: string){

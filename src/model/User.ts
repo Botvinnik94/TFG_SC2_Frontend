@@ -6,11 +6,15 @@ export class User {
     name: string;
     avatar: string | undefined;
     twitter: string | undefined;
+    admin: boolean | undefined;
     bots: Bot[] | undefined;
 
-    protected constructor(name: string, id: string) {
+    constructor(name: string, id: string, avatar?: string, twitter?: string, bots?: Bot[]) {
         this.name = name;
         this.id = id;
+        this.avatar = avatar;
+        this.twitter = twitter;
+        this.bots = bots;
     }
 
     static build(name: string, id: string, avatar?: string, twitter?: string, bots?: Bot[]): User{

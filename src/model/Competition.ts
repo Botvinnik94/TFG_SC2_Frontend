@@ -4,15 +4,18 @@ import { Bot } from './Bot';
 
 export class Competition {
 
+    id: string | undefined;
     participants: Bot[];
     name: string;
     type: "round-robin" | "single-elimination" | "double-elimination";
+    formattedType: string;
     rounds: IRound[];
     rankings: IRanking[];
     status: "open" | "pending" | "ongoing" | "completed";
-    starting_date: number;
-    started_at: number | null;
-    finished_at: number | null;
+    startingDate: number;
+    formattedStartingDate: string;
+    startedAt: number | null;
+    finishedAt: number | null;
 
 
     constructor(participants: Bot[],
@@ -21,9 +24,10 @@ export class Competition {
                 rounds: IRound[],
                 rankings: IRanking[],
                 status: "open" | "pending" | "ongoing" | "completed",
-                starting_date: number,
-                started_at: number | null,
-                finished_at: number | null)
+                startingDate: number,
+                startedAt: number | null,
+                finishedAt: number | null,
+                id?: string)
     {
         this.participants = participants;
         this.name = name;
@@ -31,9 +35,39 @@ export class Competition {
         this.rounds = rounds;
         this.rankings = rankings;
         this.status = status;
-        this.starting_date = starting_date;
-        this.started_at = started_at;
-        this.finished_at = finished_at;
+        this.startingDate = startingDate;
+        this.startedAt = startedAt;
+        this.finishedAt = finishedAt;
+        this.id = id;
+
+        this.formattedType = Competition.formatType(this.type);
+        this.formattedStartingDate = new Date(this.startingDate).toDateString();
+    }
+
+    public static getType(typeFormatted: string): "round-robin" | "single-elimination" | "double-elimination" {
+        switch(typeFormatted) {
+            case "Round-Robin":
+                return "round-robin";
+            case "Single Elimination":
+                return "single-elimination";
+            case "Double Elimination":
+                return "double-elimination";
+            default:
+                throw new Error("Invalid type of tournament")
+        }
+    }
+
+    public static formatType(type: "round-robin" | "single-elimination" | "double-elimination"): string{
+        switch(type) {
+            case "round-robin":
+                return "Round-Robin";
+            case "single-elimination":
+                return "Single Elimination";
+            case "double-elimination":
+                return "Double Elimination";
+            default:
+                throw new Error("Invalid type of tournament")
+        }
     }
 
 }
