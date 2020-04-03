@@ -15,15 +15,17 @@ export const botConverter = {
         options: firebase.firestore.SnapshotOptions
     ): Bot {
         const data = snapshot.data(options)!;
-        return new Bot(data.name, data.uid, data.script, data.race, snapshot.id, data.username, data.useravatar);
+        return new Bot(data.name, data.uid, data.script, data.race, data.elo, snapshot.id, data.username, data.useravatar);
     }
 }
 
 export class FirebaseBotDAO extends AbstractBotDAO {
 
     async create(bot: Bot): Promise<string> {
+        bot.elo = 1500;
         const documentReference = await Db.collection('bots').withConverter(botConverter).add(bot);
         bot.id = documentReference.id;
+
         const userDAO = Container.getDAOFactory(PersistenceType.Firebase).getUserDAO();
         const botOwner = await userDAO.findOne(bot.uid);
         if(botOwner.bots == null){
