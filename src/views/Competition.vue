@@ -6,7 +6,7 @@
                 <v-spacer></v-spacer>
                 <v-select
                     v-model="botsSelected"
-                    :items="botsName"
+                    :items="comboBoxElements"
                     chips
                     label="Register your bots"
                     multiple
@@ -23,7 +23,7 @@
                 color="indigo"
                 dark
             >
-                <v-toolbar-title>Participants</v-toolbar-title>
+                <v-toolbar-title>Participants: {{ competition.participants.length }}</v-toolbar-title>
             </v-toolbar>
             <v-list>
                 <v-list-item
@@ -40,14 +40,14 @@
                         small
                         @click="goToUserView(bot)"
                     >
-                        <v-avatar size="36">
+                        <v-avatar size="24">
                             <img
                                 :src=bot.useravatar
                             >
                         </v-avatar>
                         {{ bot.username }}
                     </v-btn>
-                </v-list-item>       
+                </v-list-item>
             </v-list>
         </v-card>
     </div>
@@ -60,6 +60,7 @@ import { Competition } from '../model/Competition'
 import { Bot } from '@/model/Bot'
 import { Container } from '../dao/Container';
 import { PersistenceType } from '../dao/PersistenceType';
+import RaceImage from '@/components/RaceImage'
 
 export default Vue.extend({
     data: () => {
@@ -67,8 +68,12 @@ export default Vue.extend({
             id: '',
             competition: undefined as Competition | undefined,
             botsSelected: [],
-            botsName: []
+            comboBoxElements: []
         }
+    },
+
+    components: {
+        RaceImage
     },
 
     computed: mapGetters(['authService']),
@@ -76,13 +81,13 @@ export default Vue.extend({
     async created() {
         this.id = this.$route.params.id;
         await this.getCompetition();
-        this.fillBotsName()
+        this.getComboBoxElements();
         console.log(this.competition)
     },
 
     async beforeRouteUpdate (to, from, next) {
         await this.getCompetition();
-        this.fillBotsName()
+        this.getComboBoxElements();
         return next();
     },
 
@@ -97,14 +102,18 @@ export default Vue.extend({
             }
         },
 
-        fillBotsName() {
-            this.botsName = this.authService.currentUser.bots.map( bot =>{
-                return bot.name;
-            })
+        async registerBots() {
+            console.log(this.botsSelected);
+            if(this.competition?.id){
+                await Container.getDAOFactory(PersistenceType.Firebase).getCompetitionDAO().join(this.competition.id, this.botsSelected[0])
+                console.log("joined")
+            }
         },
 
-        registerBots() {
-            console.log(this.botsSelected);
+        getComboBoxElements(){
+            this.comboBoxElements = this.authService.currentUser.bots.map( bot => {
+                return { text: bot.name, value: bot}
+            })
         },
 
         goToBotView(bot: Bot) {
