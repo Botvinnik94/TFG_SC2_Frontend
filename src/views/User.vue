@@ -97,7 +97,7 @@ export default Vue.extend({
             }
             catch(error) {
                 // TODO: go to 404
-                console.log()
+                console.log(error)
             }
         },
 

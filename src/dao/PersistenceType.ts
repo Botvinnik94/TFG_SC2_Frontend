@@ -1,4 +1,5 @@
 export enum PersistenceType {
-    Firebase,
-    Mock
+    Firebase = 'firebase',
+    Http = 'http',
+    Mock = 'mock'
 }

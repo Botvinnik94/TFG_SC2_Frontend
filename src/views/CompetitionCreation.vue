@@ -69,7 +69,7 @@
 import Vue from 'vue'
 import { Container } from '../dao/Container'
 import { PersistenceType } from '../dao/PersistenceType'
-import { Competition } from '../model/Competition'
+import { Tournament } from '../model/Tournament'
 export default Vue.extend({
     data: () => ({
       name: '',
@@ -81,9 +81,7 @@ export default Vue.extend({
         v => (v && v.length <= 20) || 'Name must be less than 20 characters',
       ], 
       types: [
-          "Round-Robin",
-          "Single Elimination",
-          "Double Elimination"
+          "Round-Robin"
       ],
       menu: false,
       loading: false
@@ -93,8 +91,8 @@ export default Vue.extend({
         async create() {
             if(this.$refs.form.validate()) {
                 try {
-                    const competition = new Competition([], this.name, Competition.getType(this.type), [], [], "open", Date.parse(this.date), null, null);
-                    await Container.getDAOFactory(PersistenceType.Firebase).getCompetitionDAO().create(competition);
+                    const tournament = new Tournament([], this.name, Tournament.getType(this.type), [], [], "open", Date.parse(this.date), null, null);
+                    await Container.getDAOFactory(PersistenceType.Firebase).getCompetitionDAO().create(tournament);
                 }
                 catch(error) {
 

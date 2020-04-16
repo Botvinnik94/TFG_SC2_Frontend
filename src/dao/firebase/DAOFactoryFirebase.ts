@@ -1,17 +1,19 @@
 import { IDAOFactory } from '../IDAOFactory';
 import { FirebaseUserDAO } from './FirebaseUserDAO';
 import { FirebaseBotDAO } from './FirebaseBotDao';
-import { FirebaseMatchDAO } from './FirebaseMatchDAO';
-import { FirebaseCompetitionDAO } from './FirebaseCompetitionDAO';
+import { AbstractMatchDAO } from '../AbstractMatchDAO';
+import { AbstractCompetitionDAO } from '../AbstractCompetitionDAO';
+//import { FirebaseMatchDAO } from './FirebaseMatchDAO';
+//import { FirebaseCompetitionDAO } from './FirebaseCompetitionDAO';
 
 export class DAOFactoryFirebase implements IDAOFactory {
 
-    getMatchDAO(): FirebaseMatchDAO {
-        return new FirebaseMatchDAO();
+    getMatchDAO(): AbstractMatchDAO {
+        throw new Error("Method not implemented.");
     }
 
-    getCompetitionDAO(): FirebaseCompetitionDAO {
-        return new FirebaseCompetitionDAO();
+    getCompetitionDAO(): AbstractCompetitionDAO {
+        throw new Error("Method not implemented.");
     }
 
     getBotDAO(): FirebaseBotDAO {
@@ -21,5 +23,5 @@ export class DAOFactoryFirebase implements IDAOFactory {
     getUserDAO(): FirebaseUserDAO {
         return new FirebaseUserDAO();
     }
-    
+
 }

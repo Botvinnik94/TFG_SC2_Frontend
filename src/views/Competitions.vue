@@ -31,7 +31,7 @@
         <v-data-table
             @click:row="openCompetition"
             :headers="headers"
-            :items="competitions"
+            :items="tournaments"
             :items-per-page="5"
             class="elevation-1"
         ></v-data-table>
@@ -45,7 +45,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
-import { Competition } from '@/model/Competition'
+import { Tournament } from '@/model/Tournament'
 import { Container } from '../dao/Container'
 import { PersistenceType } from '../dao/PersistenceType'
 
@@ -61,17 +61,17 @@ export default Vue.extend({
                 {text: 'Participantes', value: 'participants.length'},
                 {text: 'Fecha de inicio', value: 'formattedStartingDate'}
             ],
-            competitions: [] as Competition[]
+            tournaments: [] as Tournament[]
         }
     },
 
     async created() {
-        this.competitions = await Container.getDAOFactory(PersistenceType.Firebase).getCompetitionDAO().find();
+        this.tournaments = await Container.getDAOFactory(PersistenceType.Http).getCompetitionDAO().find();
     },
 
     methods: {
-        openCompetition(competition: Competition) {
-            this.$router.push(`/competition/${competition.id}`)
+        openCompetition(tournament: Tournament) {
+            this.$router.push(`/competition/${tournament.id}`)
         },
 
         goToCreateCompetition(){

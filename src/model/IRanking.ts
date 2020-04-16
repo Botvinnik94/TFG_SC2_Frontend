@@ -2,7 +2,11 @@ import { Bot } from './Bot';
 
 export interface IRanking {
 
-    bot: Bot;
-    statistics: any;
+    player: Bot;
+    for: number;
+    against: number;
+    wins: number;
+    draws: number;
+    loses: number;
 
 }

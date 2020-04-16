@@ -1,13 +1,13 @@
 import { IRound } from './IRound';
 import { IRanking } from './IRanking';
 import { Bot } from './Bot';
+import { IMatch } from './IMatch';
 
-export class Competition {
+export class Tournament {
 
     id: string | undefined;
     participants: Bot[];
     name: string;
-    type: "round-robin" | "single-elimination" | "double-elimination";
     formattedType: string;
     rounds: IRound[];
     rankings: IRanking[];
@@ -17,10 +17,11 @@ export class Competition {
     startedAt: number | null;
     finishedAt: number | null;
 
+    readonly type: "round-robin";
 
     constructor(participants: Bot[],
                 name: string,
-                type: "round-robin" | "single-elimination" | "double-elimination",
+                type: "round-robin",
                 rounds: IRound[],
                 rankings: IRanking[],
                 status: "open" | "pending" | "ongoing" | "completed",
@@ -40,34 +41,51 @@ export class Competition {
         this.finishedAt = finishedAt;
         this.id = id;
 
-        this.formattedType = Competition.formatType(this.type);
+        this.formattedType = Tournament.formatType(this.type);
         this.formattedStartingDate = new Date(this.startingDate).toDateString();
     }
 
-    public static getType(typeFormatted: string): "round-robin" | "single-elimination" | "double-elimination" {
+    public static getType(typeFormatted: string): "round-robin" {
         switch(typeFormatted) {
             case "Round-Robin":
                 return "round-robin";
-            case "Single Elimination":
-                return "single-elimination";
-            case "Double Elimination":
-                return "double-elimination";
             default:
                 throw new Error("Invalid type of tournament")
         }
     }
 
-    public static formatType(type: "round-robin" | "single-elimination" | "double-elimination"): string{
+    public static formatType(type: "round-robin"): string {
         switch(type) {
             case "round-robin":
                 return "Round-Robin";
-            case "single-elimination":
-                return "Single Elimination";
-            case "double-elimination":
-                return "Double Elimination";
             default:
                 throw new Error("Invalid type of tournament")
         }
+    }
+
+    public findMatches(status?: "waiting" | "pending" | "ongoing" | "finished", playerId?: string, roundNumber?: number): IMatch[] {
+        let matches: IMatch[] = []; 
+
+        if(roundNumber != null) {
+            if(this.rounds[roundNumber] != undefined) matches = this.rounds[roundNumber].matches;
+        }
+        else{
+            matches = Array.prototype.concat.apply([], this.rounds.map( round => round.matches)); // Flatten
+        }
+
+        if(status) {
+            matches = matches.filter( match => match.status === status);
+        }
+
+        if(playerId) {
+            matches = matches.filter( match => match.players.find( player => player.id === playerId));
+        }
+
+        return matches;
+    }
+
+    public results(playerId: string): IRanking | undefined {
+        return this.rankings.find( value => value.player.id === playerId );
     }
 
 }
