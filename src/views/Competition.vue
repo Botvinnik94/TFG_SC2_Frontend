@@ -1,37 +1,47 @@
 <template>
     <div>
-        <v-card>
+    <img src="https://static.starcraft2.com/dist/images/home-keyart-2400.be718a1b9fac3cf5eb7cb4878a499b45.jpg" class="back">
+    <v-card width="1300px" class="pa-md-4 mx-lg-auto" style="margin-top: 30px" color="rgba(255, 255, 255, 0.5)">
             <v-card-title>
-                {{ tournament.name }}
-                <v-spacer></v-spacer>
-                <v-col class="col-2" v-if="tournament.status === 'open'">
-                    Insciptions open
-                </v-col>
-                <v-col v-if="authService.currentUser && tournament.status==='open'">
-                    <v-select
-                        v-model="botsSelected"
-                        :items="comboBoxElements"
-                        chips
-                        label="Register your bots"
-                        multiple
-                        solo
-                    ></v-select>
-                    <v-btn 
-                        icon
-                        @click="registerBots"
-                    >
-                        <v-icon>mdi-plus</v-icon>
-                    </v-btn>
-                </v-col>
-                <v-col class="col-2" v-if="tournament.status === 'pending'">
-                    Insciptions closed
-                </v-col>
-                <v-col class="col-2" v-if="tournament.status === 'ongoing'">
-                    Tournament ongoing
-                </v-col>
-                <v-col class="col-2" v-if="tournament.status === 'finished'">
-                    Tournament finished
-                </v-col>
+                <v-row>
+                    <v-col v-if="tournament.status === 'open'">
+                    {{ tournament.name }}
+                    </v-col>
+                    <v-col class="col-2" v-if="tournament.status === 'open'">
+                        Insciptions open
+                    </v-col>
+                    <v-col class="col-4" style="margin-top:-5px" v-if="authService.currentUser && tournament.status==='open'">
+                        <v-select
+                            v-model="botsSelected"
+                            :items="comboBoxElements"
+                            chips
+                            label="Register your bots"
+                            multiple
+                            solo
+                        ></v-select>
+                    </v-col>
+                    <v-col class="col-1" v-if="authService.currentUser && tournament.status==='open'">
+                        <v-btn 
+                            dark
+                            @click="registerBots"
+                        >
+                            <v-icon>mdi-plus</v-icon>
+                        </v-btn>
+                    </v-col>
+                    <div v-if="tournament.status !== 'open'">
+                    {{ tournament.name }}
+                    </div>
+                    <v-spacer></v-spacer>
+                    <div v-if="tournament.status === 'pending'">
+                        Insciptions closed
+                    </div>
+                    <div v-if="tournament.status === 'ongoing'">
+                        Tournament ongoing
+                    </div>
+                    <div v-if="tournament.status === 'finished'">
+                        Tournament finished
+                    </div>
+                </v-row>
             </v-card-title>
             <v-card-subtitle>
                 {{ tournament.formattedType }} tournament
@@ -39,7 +49,7 @@
             <v-row>
                 <v-card v-if="tournament.status==='open'" class="col-12">
                     <v-toolbar
-                        color="indigo"
+                        color="primary"
                         dark
                     >   
                         <v-icon>mdi-robot</v-icon>
@@ -53,9 +63,9 @@
                         </BotItem>
                     </v-list>
                 </v-card>
-                <v-card v-if="tournament.status!=='open' && tournament.type==='round-robin'" class="col-12">
+                <v-card v-if="tournament.status!=='open' && tournament.type==='round-robin'" class="col-12" flat>
                     <v-toolbar
-                        color="indigo"
+                        color="primary"
                         dark
                     >
                         <v-icon>mdi-tournament</v-icon>
@@ -63,6 +73,7 @@
                         <v-spacer></v-spacer>
                         <v-col class="col-3">
                             <v-select
+                                style="margin-top: 25px"
                                 v-model="roundSelected"
                                 :items="roundsSelection"
                                 dense
@@ -83,9 +94,9 @@
                 </v-card>
             </v-row>
             <v-row v-if="tournament.status!=='open'">
-                <v-card class="col-6">
+                <v-card class="col-6" flat>
                     <v-toolbar
-                        color="indigo"
+                        color="primary"
                         dark
                     >   
                         <v-icon>mdi-trophy-variant</v-icon>
@@ -98,9 +109,9 @@
                         class="elevation-1"
                     ></v-data-table>
                 </v-card>
-                <v-card class="col-6">
+                <v-card class="col-6" flat>
                     <v-toolbar
-                        color="indigo"
+                        color="primary"
                         dark
                     >
                     <v-icon>mdi-sword</v-icon>
@@ -152,7 +163,7 @@
                     </v-list>
                 </v-card>
             </v-row>
-        </v-card>
+    </v-card>
     </div>
 </template>
 
@@ -164,7 +175,9 @@ import { IMatch } from '@/model/IMatch'
 import { Bot } from '@/model/Bot'
 import { Container } from '../dao/Container';
 import { PersistenceType } from '../dao/PersistenceType';
+// @ts-ignore
 import BotItem from '@/components/BotItem';
+// @ts-ignore
 import MatchItem from '@/components/MatchItem';
 
 export default Vue.extend({
@@ -178,7 +191,7 @@ export default Vue.extend({
             ongoingMatches: [] as IMatch[],
             finishedMatches: [] as IMatch[],
             roundMatches: [] as IMatch[],
-            roundsSelection: [] as number[] | undefined,
+            roundsSelection: [] as any[] | undefined,
             roundSelected: 0 as number,
             rankingHeaders: [
                 { text: 'Bot', value: 'player.name'},
@@ -197,16 +210,14 @@ export default Vue.extend({
 
     computed: mapGetters(['authService']),
 
-    async created() {
+    async mounted() {
 
         this.id = this.$route.params.id;
         await this.getCompetition();
-        this.authService.onAuthStateChanged.subscribe(() => {
-            this.getComboBoxElements();
-        });
+        this.getComboBoxElements();
 
         this.roundsSelection = this.tournament?.rounds.map( (round, index) => {
-            return index;
+            return { text: `Round ${index+1}`, value: index}
         })
 
         this.getRoundMatches();
@@ -214,8 +225,6 @@ export default Vue.extend({
         this.pendingMatches = this.tournament?.findMatches("pending") ?? [];
         this.ongoingMatches = this.tournament?.findMatches("ongoing") ?? [];
         this.finishedMatches = this.tournament?.findMatches("finished") ?? [];
-        console.log(this.tournament);
-
     },
 
     async beforeRouteUpdate (to, from, next) {
@@ -226,24 +235,20 @@ export default Vue.extend({
 
     methods: {
         async getCompetition() {
-            try {
-                this.tournament = await Container.getDAOFactory(PersistenceType.Http).getCompetitionDAO().findOne(this.id);
-            }
-            catch(error) {
-                // TODO: go to 404
-                console.log(error)
-            }
+            this.tournament = await Container.getDAOFactory(PersistenceType.Http).getCompetitionDAO().findOne(this.id);
         },
 
         async registerBots() {
-            console.log(this.botsSelected);
             if(this.tournament?.id){
-                await Container.getDAOFactory(PersistenceType.Http).getCompetitionDAO(this.authService).join(this.tournament.id, this.botsSelected[0]);
+                for(let i = 0; i < this.botsSelected.length; i++) {
+                    await Container.getDAOFactory(PersistenceType.Http).getCompetitionDAO(this.authService).join(this.tournament.id, this.botsSelected[i]);
+                }
+                await this.getCompetition();
             }
         },
 
         getComboBoxElements(){
-            this.comboBoxElements = this.authService.currentUser.bots.map( (bot: any) => {
+            this.comboBoxElements = this.authService.currentUser?.bots.map( (bot: any) => {
                 return { text: bot.name, value: bot}
             })
         },
@@ -266,3 +271,13 @@ export default Vue.extend({
     }
 })
 </script>
+
+<style scoped>
+ .back {
+    position:fixed;
+    right: -15%;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+ }
+</style>

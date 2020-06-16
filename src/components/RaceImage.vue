@@ -1,5 +1,5 @@
 <template>
-    <v-col class="race">
+    <div class="race">
         <v-img
             v-if="race == 'Terran'"
             class="shrink mr-2"
@@ -26,7 +26,7 @@
             transition="scale-transition"
             width="40"
         ></v-img>
-    </v-col>
+    </div>
 </template>
 
 <script lang="ts">

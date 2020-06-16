@@ -8,7 +8,7 @@ export class HttpMatchDAO extends AbstractMatchDAO {
 
     async findOne(id: string): Promise<IMatch> {
 
-        const response = await axios.default.get('http://localhost:5001/sc2-arena/us-central1/api/matches/' + id);
+        const response = await axios.default.get('https://us-central1-sc2-arena.cloudfunctions.net/api/matches/' + id);
         const serializer = new MatchSerializer();
         const match = serializer.unserialize(response.data);
 
@@ -17,8 +17,26 @@ export class HttpMatchDAO extends AbstractMatchDAO {
 
     }
 
-    find(filter?: IMatchFilter | undefined, startAt?: number | undefined, endAt?: number | undefined): Promise<IMatch[]> {
-        throw new Error("Method not implemented.");
+    async find(filter?: IMatchFilter | undefined, limit?: number | undefined): Promise<IMatch[]> {
+        const config = {
+            params: {
+                status: filter?.status,
+                player1: filter?.player1,
+                player2: filter?.player2,
+                tournamentId: filter?.tournamentId,
+                limit: limit
+            },
+            headers: {}
+        }
+
+        const response = await axios.default.get('https://us-central1-sc2-arena.cloudfunctions.net/api/matches/', config);
+        const serializer = new MatchSerializer();
+
+        const matches = response.data.map( (value: any) => {
+            return serializer.unserialize(value);
+        })
+        
+        return matches;
     }
 
 }

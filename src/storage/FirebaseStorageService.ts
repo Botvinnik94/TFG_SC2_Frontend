@@ -3,22 +3,14 @@ import { Storage } from '@/firebase/Storage';
 
 export class FirebaseStorageService extends AbstractStorageService {
 
-    public put(file: File, destinationPath: string): Promise<string> {
-        return new Promise((resolve, reject) => {
+    public async put(file: File, destinationPath: string): Promise<string> {
+        //Set contentDisposition for downloading as an attachment in the browser
+        const metadata = {
+            contentDisposition: 'attachment; filename="' + file.name + '"; filename*="' + file.name + '"'
+        }
 
-            //Set contentDisposition for downloading as an attachment in the browser
-            const metadata = {
-                contentDisposition: 'attachment; filename="' + file.name + '"; filename*="' + file.name + '"'
-            }
-
-            Storage.ref(destinationPath).put(file, metadata)
-            .then( async (snapshot) => {
-                resolve(((await snapshot.ref.getDownloadURL()).split('?'))[0]);
-            })
-            .catch( error => {
-                reject(error);
-            })
-        })
+        const snapshot = await Storage.ref(destinationPath).put(file, metadata)
+        return snapshot.ref.toString()
     }
 
     // Path is the basic URL for the file, we return the actual download file.

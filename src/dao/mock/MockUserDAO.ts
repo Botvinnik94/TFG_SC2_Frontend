@@ -8,10 +8,10 @@ import { Bot } from '@/model/Bot';
 export class MockUserDAO extends AbstractUserDAO{
 
     private readonly users: User[] = [
-        User.build("Borrex", "1"),
-        User.build("Velego", "2"),
-        User.build("Waka", "3"),
-        User.build("Botvinnik", "4")
+        // User.build("Borrex", "1"),
+        // User.build("Velego", "2"),
+        // User.build("Waka", "3"),
+        // User.build("Botvinnik", "4")
     ]
 
     findOne(id: string): Promise<User> {
@@ -48,11 +48,11 @@ export class MockUserDAO extends AbstractUserDAO{
         })
     }
 
-    create(user: User): Promise<void> {
+    create(user: User): Promise<string> {
         return new Promise(resolve => {
             user.id = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString();
             this.users.push(user);
-            resolve();
+            resolve(user.id);
         });
     }
 
@@ -88,10 +88,10 @@ export class MockUserDAO extends AbstractUserDAO{
     // Helpers
     async getBotsFromUser(uid: string): Promise<Bot[]> {
         const botDAO = Container.getDAOFactory(PersistenceType.Mock).getBotDAO();
-        const botFilter: IBotFilter = {
-            uid: uid
-        } 
-        return await botDAO.find(botFilter);
+        // const botFilter: IBotFilter = {
+        //     uid: uid
+        // } 
+        return await botDAO.find();
     }
 
 }

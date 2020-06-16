@@ -1,13 +1,13 @@
 import { IReadable } from './IReadable';
 import { IWritable } from './IWritable';
 import { Tournament } from '@/model/Tournament';
-import { ICompetitionFilter } from '@/model/ICompetitionFilter';
+import { ITournamentFilter } from '@/model/ITournamentFilter';
 import { Bot } from '@/model/Bot';
 
-export abstract class AbstractCompetitionDAO implements IReadable<ICompetitionFilter, Tournament>, IWritable<Tournament>{
+export abstract class AbstractCompetitionDAO implements IReadable<ITournamentFilter, Tournament>, IWritable<Tournament>{
 
     abstract findOne(id: string): Promise<Tournament>;
-    abstract find(filter?: ICompetitionFilter | undefined, startAt?: number | undefined, endAt?: number | undefined): Promise<Tournament[]>;
+    abstract find(filter?: ITournamentFilter | undefined, limit?: number): Promise<Tournament[]>;
     abstract create(competition: Tournament): Promise<string>;
     abstract update(competition: Tournament): Promise<void>;
     abstract delete(id: string): Promise<void>;

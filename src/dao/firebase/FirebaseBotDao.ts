@@ -1,5 +1,6 @@
 import { AbstractBotDAO } from '../AbstractBotDAO';
-import { Bot } from '@/model/Bot' 
+import { Bot } from '@/model/Bot'
+import { IBotFilter } from "../../model/IBotFilter"
 import { Db } from '@/firebase/Db';
 import { Container } from '../Container';
 import { PersistenceType } from '../PersistenceType';
@@ -15,7 +16,7 @@ export const botConverter = {
         options: firebase.firestore.SnapshotOptions
     ): Bot {
         const data = snapshot.data(options)!;
-        return new Bot(data.name, data.uid, data.script, data.race, data.elo, snapshot.id, data.username, data.useravatar);
+        return new Bot(data.name, data.uid, data.script, data.race, data.elo, snapshot.id, data.username, data.useravatar, data.tournamentWins);
     }
 }
 
@@ -57,7 +58,31 @@ export class FirebaseBotDAO extends AbstractBotDAO {
             throw new Error("Bot not found in DB")
         }
     }
-    find(filter?: import("../../model/IBotFilter").IBotFilter | undefined, startAt?: number | undefined, endAt?: number | undefined): Promise<Bot[]> {
-        throw new Error("Method not implemented.");
+
+    async find(filter?: IBotFilter | undefined, limit?: number | undefined): Promise<Bot[]> {
+        let query: any = Db.collection('bots').withConverter(botConverter)
+
+        if(filter?.minElo) {
+            query = query.where('elo', '>=', filter.minElo)
+        }
+
+        if(filter?.maxElo) {
+            query = query.where('elo', '<=', filter.maxElo)
+        }
+
+        if(filter?.race) {
+            query = query.where('race', '==', filter.race)
+        }
+
+        query = query.orderBy('tournamentWinsCount', 'desc')
+
+        if(limit) {
+            query = query.limit(limit)
+        }
+
+        const snapshot = await query.get()
+        return snapshot.docs.map( (botSnapshot: any) => {
+            return botSnapshot.data()
+        })
     }
 }

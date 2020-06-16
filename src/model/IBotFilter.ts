@@ -1,6 +1,7 @@
 export interface IBotFilter {
 
-    name?: string;
-    uid?: string;
+    minElo?: number
+    maxElo?: number
+    race?: "Terran" | "Protoss" | "Zerg"
 
 }

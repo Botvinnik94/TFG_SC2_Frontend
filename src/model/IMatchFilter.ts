@@ -1,6 +1,8 @@
 export interface IMatchFilter {
 
-    bot1Id: string,
-    bot2Id: string
+    tournamentId?: string,
+    player1?: string,
+    player2?: string,
+    status?: string,
 
 }

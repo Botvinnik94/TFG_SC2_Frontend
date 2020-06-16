@@ -9,6 +9,6 @@ export abstract class AbstractBotDAO implements IWritable<Bot>, IReadable<IBotFi
     abstract update(object: Bot): Promise<void>
     abstract delete(id: string): Promise<void>
     abstract findOne(id: string): Promise<Bot>
-    abstract find(filter?: IBotFilter | undefined, startAt?: number | undefined, endAt?: number | undefined): Promise<Bot[]>
+    abstract find(filter?: IBotFilter | undefined, limit?: number | undefined): Promise<Bot[]>
   
 }

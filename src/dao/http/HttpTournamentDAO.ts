@@ -1,6 +1,6 @@
 import { AbstractCompetitionDAO } from '../AbstractCompetitionDAO';
 import { Tournament } from '@/model/Tournament';
-import { ICompetitionFilter } from '@/model/ICompetitionFilter';
+import { ITournamentFilter } from '@/model/ITournamentFilter';
 import { Bot } from '@/model/Bot';
 import * as axios from 'axios';
 import { TournamentSerializer } from '../serializer/TournamentSerializer';
@@ -25,22 +25,64 @@ export class HttpTournamentDAO extends AbstractCompetitionDAO {
                     'Authorization': 'Bearer ' + await this.authService.getAccessToken()
                 }
             }
-        const response = await axios.default.get('http://localhost:5001/sc2-arena/us-central1/api/' + id, config);
-        console.log(response.data)
+        const response = await axios.default.get('https://us-central1-sc2-arena.cloudfunctions.net/api/' + id, config);
         const serializer = new TournamentSerializer();
         const tournament = serializer.unserialize(response.data);
-        console.log(tournament)
         if(tournament) return tournament;
         else throw new Error(`Tournament ${id} not found in Db`);
 
     }
 
-    find(filter?: ICompetitionFilter | undefined, startAt?: number | undefined, endAt?: number | undefined): Promise<Tournament[]> {
-        throw new Error("Method not implemented.");
+    async find(filter?: ITournamentFilter, limit?: number): Promise<Tournament[]> {
+        const config = {
+            params: {
+                status: filter?.status,
+                type: filter?.type,
+                fromDate: filter?.fromDate,
+                toDate: filter?.toDate,
+                limit: limit
+            },
+            headers: {}
+        }
+
+        if(this.authService)
+            config.headers = {
+                'Authorization': 'Bearer ' + await this.authService.getAccessToken()
+            }
+
+        const response = await axios.default.get('https://us-central1-sc2-arena.cloudfunctions.net/api/', config);
+
+        const serializer = new TournamentSerializer();
+
+        const tournaments = response.data.map( (value: any) => {
+            return serializer.unserialize(value);
+        })
+        
+        return tournaments;
     }
 
-    create(competition: Tournament): Promise<string> {
-        throw new Error("Method not implemented.");
+    async create(competition: Tournament): Promise<string> {
+        let config;
+
+        const data = {
+            type: competition.type,
+            name: competition.name,
+            date: competition.startingDate
+        }
+
+        if(this.authService)
+            config = {
+                headers: {
+                    'Authorization': 'Bearer ' + await this.authService.getAccessToken()
+                }
+            }
+        
+        const response = await axios.default.post('https://us-central1-sc2-arena.cloudfunctions.net/api/', data, config)
+        if(response.status !== 201) {
+            throw new Error(`Error trying to create tournament: ${response.status} ${response.statusText}`);
+        }
+
+        return response.data
     }
 
     update(competition: Tournament): Promise<void> {
@@ -61,7 +103,7 @@ export class HttpTournamentDAO extends AbstractCompetitionDAO {
                     'Authorization': 'Bearer ' + await this.authService.getAccessToken()
                 }
             }
-        const response = await axios.default.put('http://localhost:5001/sc2-arena/us-central1/api/' + tournamentId + '/inscription', { player: bot.id }, config);
+        const response = await axios.default.put('https://us-central1-sc2-arena.cloudfunctions.net/api/' + tournamentId + '/inscription', { player: bot.id }, config);
         if(response.status !== 200) {
             throw new Error(`Error trying to enroll player ${bot.id} in tournament ${tournamentId}: ${response.status} ${response.statusText}`);
         }
@@ -83,9 +125,9 @@ export class HttpTournamentDAO extends AbstractCompetitionDAO {
             }
         }
     
-        const response = await axios.default.delete('http://localhost:5001/sc2-arena/us-central1/api/' + tournamentId + '/inscription', config);
+        const response = await axios.default.delete('https://us-central1-sc2-arena.cloudfunctions.net/api/' + tournamentId + '/inscription', config);
         if(response.status !== 200) {
-            throw new Error(`Error trying to enroll player ${botId} in tournament ${tournamentId}: ${response.status} ${response.statusText}`);
+            throw new Error(`Error trying to withdraw player ${botId} in tournament ${tournamentId}: ${response.status} ${response.statusText}`);
         }
 
     }

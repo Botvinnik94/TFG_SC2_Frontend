@@ -1,94 +1,66 @@
 <template>
-  <div class="home">
-    <v-card :loading="loading">
-        <img alt="Vue logo" src="../assets/logo.png">
-        <v-btn @click="$router.push('/about')">Go to about</v-btn>
-        <v-btn @click="getuser">See current user</v-btn>
-        <v-btn @click="signout">Sign out</v-btn>
-        <p>{{ user }}</p>
-        <v-file-input @change="changeSelectedFile" small-chips label="File input"></v-file-input>
-        <v-btn @click="upload">Upload</v-btn>
-        <v-btn @click="download">Download</v-btn>
-        <v-btn @click="deleteFile">Delete</v-btn>
-    </v-card>
-    <img id=myimg>
-  </div>
+  <div>
+    <v-card width="1200px" class="pa-md-4 mx-lg-auto" flat style="margin-top: 30px" color="rgba(255,255, 255, 0.85)">
+    <p>Welcome to the SC2 Arena! In this website you could compete with other users for the to see who has the best Starcraft 2 bot-creation skills. By uploading your SC2 Python bots and enrolling them in tournaments between bots from other users. Maybe your bot will never win Serral or Innovation, but machines should compete with machines. Hone your skills and upload a bot!</p>
+    <v-list>
+        <v-toolbar
+            color="primary"
+            dark
+        >
+        <v-icon>mdi-clock</v-icon>
+            <v-toolbar-title>Recently finished matches</v-toolbar-title>
+        </v-toolbar>
+        <MatchItem v-for="(match, i) in recentMatches"
+            :key="i" 
+            v-bind:match="match"
+            @click="goToMatchView(match)">
+        </MatchItem>
+    </v-list>
+    <CompetitionTable :tournaments="openTournaments" title="Tournaments open for registration" icon="mdi-tournament"></CompetitionTable>
+  </v-card></div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
+// @ts-ignore
+import CompetitionTable from '@/components/CompetitionTable'
+// @ts-ignore
+import MatchItem from '@/components/MatchItem'
 import { mapActions, mapGetters } from 'vuex'
-import { User } from '@/model/User'
-import { FirebaseStorageService } from '../storage/FirebaseStorageService';
+import { IMatch } from '../model/IMatch';
+import { Container } from '../dao/Container';
+import { PersistenceType } from '../dao/PersistenceType';
+import { Tournament } from '../model/Tournament';
 // @ is an alias to /src
 
 export default Vue.extend({
-  name: 'Home',
+    name: 'Home',
 
-  data: () => ({
-    file: {} as File,
-    user: null as User | null,
-    loading: false
-  }),
-
-  computed: mapGetters(['authService', 'storageService']),
-
-  methods: {
-
-    async getuser() {
-      this.user = this.authService.currentUser;
+    components: {
+        MatchItem,
+        CompetitionTable
     },
 
-    async signout() {
-      await this.authService.signOut();
-      this.$router.push('/login')
+    data: () => ({
+        recentMatches: [] as IMatch[],
+        openTournaments: [] as Tournament[]
+    }),
+
+    computed: mapGetters(['authService']),
+
+    mounted() {
+        Container.getDAOFactory(PersistenceType.Http).getMatchDAO().find({ status: 'finished' }, 5).then( matches => {
+            this.recentMatches = matches
+        })
+        Container.getDAOFactory(PersistenceType.Http).getCompetitionDAO().find({ status: 'open' }).then( tournaments => {
+            this.openTournaments = tournaments
+        })
     },
 
-    changeSelectedFile(file: File) {
-        this.file = file;
-        console.log(this.file)
-    },
-
-    async upload(){
-        this.loading = true;
-        try{
-            console.log(await this.storageService.put(this.file, this.file.name));
-        }
-        catch(error) {
-            console.error(error);
-        }
-        finally {
-            this.loading = false;
-        }
-    },
-
-    async download() {
-        this.loading = true;
-        try{
-            window.location.href = await this.storageService.get('https://firebasestorage.googleapis.com/v0/b/sc2-arena.appspot.com/o/Wappen_L%C3%BCbeck.svg?alt=media&token=3a441c2f-ef5c-424f-8add-4efbb6a06116');
-            //saveAs(blob, 'test.svg');
-        }
-        catch(error) {
-            console.error(error);
-        }
-        finally {
-            this.loading = false;
-        }
-    },
-
-    async deleteFile() {
-        try{
-           await this.storageService.delete('https://firebasestorage.googleapis.com/v0/b/sc2-arena.appspot.com/o/Wappen_Lübeck.svg');
-           alert("Deleted")
-            //saveAs(blob, 'test.svg');
-        }
-        catch(error) {
-            console.error(error);
-        }
-        finally {
-            this.loading = false;
+    methods: {
+        goToMatchView(match: IMatch) {
+            this.$router.push(`/match/${match.id}`)
         }
     }
-  }
 })
 </script>

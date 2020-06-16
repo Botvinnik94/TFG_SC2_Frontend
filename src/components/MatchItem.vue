@@ -26,6 +26,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapGetters } from 'vuex';
+// @ts-ignore
 import RaceImage from '@/components/RaceImage';
 
 export default Vue.extend({
@@ -43,13 +44,13 @@ export default Vue.extend({
 <style scoped>
 
     .ownMatch {
-        background-color: darkseagreen;
+        background-color: #a67c00;
     }
 
     .ownBot {
         font-weight: bolder;
         font-size: larger;
-        color: darkred;
+        color: #000048;
     }
 
 

@@ -1,30 +1,47 @@
 <template>
     <div class="bot">
-        <v-card v-if="this.bot">
+        <img src="https://static.starcraft2.com/dist/images/bg-news-archive-2400--Blue-80-10.8e01428e4dec1f8ac3d562740234af07.jpg" class="back">
+        <v-card v-if="this.bot" width="1000px" class="pa-md-4 mx-lg-auto" flat style="margin-top: 20px" color="rgba(255, 255, 255, 0.75)">
             <v-card-title>
-
                 <RaceImage v-bind:race="bot.race"></RaceImage>
                 Bot {{ bot.name }}
+                <v-spacer></v-spacer>
+                <v-btn 
+                    text
+                    large
+                    @click="goToUser"
+                >
+                    <v-avatar size="42" style="margin-right: 10px">
+                        <img
+                            :src=bot.useravatar
+                        >
+                    </v-avatar>
+                    {{ bot.username }}
+                </v-btn>
             </v-card-title>
-            <v-card-text>
-                <v-card-title>Creator:
-                    <v-btn 
-                        text
-                        small
-                        @click="goToUser"
-                    >
-                        <v-avatar size="36">
-                            <img
-                                :src=bot.useravatar
-                            >
-                        </v-avatar>
-                        {{ bot.username }}
-                    </v-btn>
-                </v-card-title>
-            </v-card-text>
+            <v-toolbar color="primary" dark>
+                <v-icon>mdi-clock</v-icon>
+                <v-toolbar-title>Recent matches</v-toolbar-title>
+            </v-toolbar>
+            <v-list>
+                <MatchItem v-for="(match, i) in recentMatches"
+                    :key="i" 
+                    v-bind:match="match"
+                    @click="goToMatchView(match)">
+                </MatchItem>
+                <v-card v-if="recentMatches.length === 0">
+                    <v-card-subtitle>
+                        <span><center>Your bot has not played any matches yet.</center></span>
+                        <span><center><v-btn text @click="goToCompetitions">
+                            Enroll it in a tournament!
+                        </v-btn></center></span>
+                    </v-card-subtitle>
+                </v-card>
+            </v-list>
             <v-card-actions>
-                <v-btn v-if="this.authService.currentUser && this.authService.currentUser.id === bot.uid"
+                <v-btn v-if="this.authService.currentUser && this.authService.currentUser.id === bot.uid" dark
                         @click="downloadScript">
+                    <v-icon left>mdi-cloud-download</v-icon>
                     Download script
                 </v-btn>
             </v-card-actions>
@@ -36,24 +53,30 @@
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import { Bot } from '../model/Bot';
+import { IMatch } from '@/model/IMatch'
 import { User } from '@/model/User';
 import { Container } from '../dao/Container';
 import { PersistenceType } from '../dao/PersistenceType';
 import { StorageServiceFactory } from '../storage/StorageServiceFactory';
 import { StorageType } from '../storage/StorageType';
+// @ts-ignore
 import RaceImage from '@/components/RaceImage';
+// @ts-ignore
+import MatchItem from '@/components/MatchItem';
 
 export default Vue.extend({
     name: "Bot",
 
     components: {
-        RaceImage
+        RaceImage,
+        MatchItem
     },
 
     data: () => {
         return {
             id: '',
-            bot: undefined as Bot | undefined
+            bot: undefined as Bot | undefined,
+            recentMatches: [] as IMatch[]
         }
     },
 
@@ -62,9 +85,8 @@ export default Vue.extend({
     async created() {
         this.id = this.$route.params.id;
         await this.getBot();
-        console.log(this.bot)
     },
-    
+
     // When the user navigates from /user/foo to /user/bar, the same component instance will be reused
     // Lifecycle hooks will not be called
     // We must update the bot from the parameter here
@@ -76,13 +98,8 @@ export default Vue.extend({
     methods: {
 
         async getBot(){
-            try {
-                this.bot = await Container.getDAOFactory(PersistenceType.Firebase).getBotDAO().findOne(this.id);
-            }
-            catch(error) {
-                // TODO: go to 404
-                console.log()
-            }
+            this.bot = await Container.getDAOFactory(PersistenceType.Firebase).getBotDAO().findOne(this.id);
+            this.recentMatches = await Container.getDAOFactory(PersistenceType.Http).getMatchDAO().find({ status: 'finished', player1: this.id }, 5)
         },
 
         async downloadScript() {
@@ -94,7 +111,23 @@ export default Vue.extend({
 
         goToUser() {
             this.$router.push(`/user/${this.bot?.uid}`)
-        }
+        },
+
+        goToMatchView(match: IMatch) {
+            this.$router.push(`/match/${match.id}`)
+        },
+
+        goToCompetitions() {
+            this.$router.push(`/competition`)
+        },
     }
 })
 </script>
+<style scoped>
+ .back {
+    position:fixed;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+ }
+</style>

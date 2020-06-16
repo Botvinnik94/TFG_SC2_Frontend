@@ -5,10 +5,13 @@
         <v-list-item-title v-bind:class="{ ownBotName: (authService.currentUser && authService.currentUser.id === bot.uid)}">
             {{ bot.name }}
         </v-list-item-title>
+        <v-list-item-subtitle>
+            Tournament wins: {{ bot.tournamentWins.length}}
+        </v-list-item-subtitle>
         <v-btn 
             text
             small
-            @click="goToUserView(bot)"
+            @click="goToUserView"
         >
             <v-avatar size="24">
                 <img
@@ -23,6 +26,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
+// @ts-ignore
 import RaceImage from '@/components/RaceImage';
 
 export default Vue.extend({
@@ -33,20 +37,26 @@ export default Vue.extend({
         RaceImage
     },
 
-    computed: mapGetters(['authService'])
+    computed: mapGetters(['authService']),
+
+    methods: {
+        goToUserView() {
+            this.$router.push(`/user/${this.bot.uid}`)
+        }
+    }
 })
 </script>
 
 <style scoped>
 
     .ownBot {
-        background-color: darkseagreen;
+        background-color: #a67c00;
     }
 
     .ownBotName {
         font-weight: bolder;
         font-size: larger;
-        color: darkred;
+        color: #000048;
     }
 
 </style>

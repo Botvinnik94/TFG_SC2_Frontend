@@ -7,7 +7,6 @@ export class FirebaseGoogleAuthService extends FirebaseAuthService {
     public async signIn(): Promise<void> {
         const provider = new firebase.auth.GoogleAuthProvider();
         const userCredential = await Auth.signInWithPopup(provider);
-        console.log(userCredential)
         try {
             await this.retrieveUserWithUserCredential(userCredential);
         }

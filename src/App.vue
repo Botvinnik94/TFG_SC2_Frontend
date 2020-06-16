@@ -3,24 +3,27 @@
     <v-app-bar
       app
       color="primary"
-      dark
     >
-      <v-btn @click="goToHome" height="50" text>
+      <v-btn @click="goToHome" width="50" height="50" text dark>
         <v-img
           class="shrink mr-2"
           contain
-          src="@/assets/logo.svg"
+          src="@/assets/img-sc2-nav-icon.png"
           transition="scale-transition"
           width="40"
         ></v-img>
       </v-btn>
 
-      <v-btn @click="goToCompetitions" height="50" text>
+      <v-btn @click="goToCompetitions" height="50" text dark>
         Competitions
       </v-btn>
 
-      <v-btn height="50" text>
-        Leaderboards
+      <v-btn @click="goToLeaderboards" height="50" text dark>
+        Leaderboard
+      </v-btn>
+
+      <v-btn @click="goToAbout" height="50" text dark>
+        About
       </v-btn>
 
       <v-spacer></v-spacer>
@@ -31,15 +34,15 @@
         transition="slide-y-transition"
       >
         <template v-slot:activator="{ on }">
-          <v-btn v-if="user" text v-on="on" height="50">
-            <v-avatar left>
+          <v-btn dark v-if="user" text v-on="on" height="50">
+            <v-avatar left style="margin-right: 10px">
                 <img
                 :src=user.avatar
                 >
             </v-avatar>
             {{ user.name }}
           </v-btn>
-          <v-btn v-else @click="goToSignIn">
+          <v-btn v-else @click="goToSignIn" color="secondary">
             Sign In
           </v-btn>
         </template>
@@ -56,7 +59,7 @@
       </v-menu>
     </v-app-bar>
 
-    <v-content>
+    <v-content class="background">
       <router-view></router-view>
     </v-content>
   </v-app>
@@ -89,12 +92,12 @@ export default Vue.extend({
       {
         name: 'Profile',
         icon: 'mdi-account',
-        action: undefined
+        action: undefined as unknown
       },
       {
         name: 'Sign out',
         icon: 'mdi-logout',
-        action: undefined
+        action: undefined as unknown
       }
     ]
   }),
@@ -127,6 +130,14 @@ export default Vue.extend({
           this.$router.push('/competition');
       },
 
+      goToLeaderboards(){
+          this.$router.push('/leaderboards');
+      },
+
+        goToAbout() {
+            this.$router.push('/about')
+        },
+
       async signOut() {
         await this.authService.signOut();
       },
@@ -134,3 +145,12 @@ export default Vue.extend({
 
 });
 </script>
+
+<style>
+    .background {
+        background-image: url("https://bnetcmsus-a.akamaihd.net/cms/page_media/JH0RQWQ9CMKM1510790242312.jpg");
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position: 50%;
+    }
+</style>

@@ -8,8 +8,9 @@ export class Bot {
     race: string;
     script: string;
     elo: number | undefined;
+    tournamentWins: string[];
 
-    constructor(name: string, uid: string, script: string, race: string, elo?: number, id?: string, username?: string, useravatar?: string) {
+    constructor(name: string, uid: string, script: string, race: string, elo?: number, id?: string, username?: string, useravatar?: string, tournamentWins?: string[]) {
         this.name = name;
         this.uid = uid;
         this.script = script;
@@ -18,5 +19,6 @@ export class Bot {
         this.id = id;
         this.username = username;
         this.useravatar = useravatar;
+        this.tournamentWins = tournamentWins ?? []
     }
 }

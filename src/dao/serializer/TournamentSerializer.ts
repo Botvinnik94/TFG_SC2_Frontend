@@ -19,16 +19,16 @@ export class TournamentSerializer implements ISerializer<Tournament> {
                     const players: Bot[] = matchData.players.map( (playerData: any) => {
                         return new Bot(playerData.name, playerData.uid,
                                        playerData.script, playerData.race, playerData.elo,
-                                       playerData.id, playerData.username, playerData.useravatar)
+                                       playerData.id, playerData.username, playerData.useravatar, playerData.tournamentWins)
                     });
                     const games: IGame[] = matchData.games.map ( (gameData: any) => {
                         return {
                             participant1: new Bot(gameData.participant1.name, gameData.participant1.uid,
                                                   gameData.participant1.script, gameData.participant1.race, gameData.participant1.elo,
-                                                  gameData.participant1.id, gameData.participant1.username, gameData.participant1.useravatar),
+                                                  gameData.participant1.id, gameData.participant1.username, gameData.participant1.useravatar, gameData.participant1.tournamentWins),
                             participant2: new Bot(gameData.participant2.name, gameData.participant2.uid,
                                                   gameData.participant2.script, gameData.participant2.race, gameData.participant2.elo,
-                                                  gameData.participant2.id, gameData.participant2.username, gameData.participant2.useravatar),
+                                                  gameData.participant2.id, gameData.participant2.username, gameData.participant2.useravatar, gameData.participant1.tournamentWins),
                             winner: gameData.winner,
                             map: gameData.map
                         }
@@ -58,7 +58,7 @@ export class TournamentSerializer implements ISerializer<Tournament> {
                 return {
                     player: new Bot(rankingData.player.name, rankingData.player.uid,
                                     rankingData.player.script, rankingData.player.race, rankingData.player.elo,
-                                    rankingData.player.id, rankingData.player.username, rankingData.player.useravatar),
+                                    rankingData.player.id, rankingData.player.username, rankingData.player.useravatar, rankingData.player.tournamentWins),
                     for: rankingData.for,
                     against: rankingData.against,
                     wins: rankingData.wins,
@@ -70,7 +70,7 @@ export class TournamentSerializer implements ISerializer<Tournament> {
             const players = data.players.map( (player: any) => {
                 return new Bot(player.name, player.uid,
                     player.script, player.race, player.elo,
-                    player.id, player.username, player.useravatar);
+                    player.id, player.username, player.useravatar, player.tournamentWins);
             })
 
             return new Tournament(players, data.name, data.type, rounds, rankings, data.status, data.startingDate, data.startedAt, data.finishedAt, data.id);

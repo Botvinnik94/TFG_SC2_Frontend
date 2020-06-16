@@ -102,16 +102,16 @@ export class FirebaseAuthService extends AbstractAuthService {
     protected async createUserWithUserCredential(userCredential: firebase.auth.UserCredential, user?: User): Promise<User> {
         const userDao = Container.getDAOFactory(PersistenceType.Firebase).getUserDAO();
         if(user == null){
-            user = User.build(  userCredential.user?.displayName || '', 
-                                userCredential.user?.uid, 
-                                userCredential.user?.photoURL || undefined,
-                                userCredential.additionalUserInfo?.username)
+            user = new User(userCredential.user?.displayName || '',
+                            userCredential.user?.uid || '',
+                            userCredential.user?.photoURL || '',
+                            undefined,
+                            [], false)
         }
         else {
-            user.id = userCredential.user?.uid;
+            user.id = userCredential.user?.uid || '';
         }
         await userDao.create(user);
         return user;
     }
-    
 }

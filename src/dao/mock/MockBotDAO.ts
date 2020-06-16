@@ -5,17 +5,17 @@ import { IBotFilter } from '../../model/IBotFilter';
 export class MockBotDAO extends AbstractBotDAO{
 
     private readonly bots: Bot[] = [
-        Bot.build("AlphaStar", "1", Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString()),
-        Bot.build("Deep Yellow", "1", Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString()),
-        Bot.build("Stockstar", "2", Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString()),
-        Bot.build("BotBotvinnik", "1", Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString())
+        // Bot.build("AlphaStar", "1", Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString()),
+        // Bot.build("Deep Yellow", "1", Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString()),
+        // Bot.build("Stockstar", "2", Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString()),
+        // Bot.build("BotBotvinnik", "1", Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString())
     ]
 
-    create(object: Bot): Promise<void> {
+    create(object: Bot): Promise<string> {
         return new Promise( resolve => {
             object.id = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER).toString();
             this.bots.push(object);
-            resolve();
+            resolve(object.id);
         });
     }
   
@@ -67,13 +67,13 @@ export class MockBotDAO extends AbstractBotDAO{
             }
             else{
                 const results: Bot[] = [];
-                this.bots.forEach(bot => {
-                    if(bot.name.includes(filter.name ?? '') && 
-                       filter.uid == undefined ? true : (filter.uid === bot.uid))
-                    {
-                        results.push(bot);
-                    }
-                })
+                // this.bots.forEach(bot => {
+                //     if(bot.name.includes(filter.name ?? '') && 
+                //        filter.uid == undefined ? true : (filter.uid === bot.uid))
+                //     {
+                //         results.push(bot);
+                //     }
+                // })
                 resolve(results);
             }
         })

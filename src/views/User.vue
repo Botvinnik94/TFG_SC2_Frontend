@@ -1,8 +1,9 @@
 <template>
-    <div class="user">
-        <v-card v-if="this.user">
+    <div>
+    <img src="https://static.starcraft2.com/dist/images/bg-game-modes-2400.3476f918e683b216da8d53fe83c1c7a4.jpg" class="back">
+    <v-card width="1200px" class="pa-md-4 mx-lg-auto" flat v-if="this.user" style="margin-top: 30px" color="rgba(255, 255, 255, 0.5)">
             <v-card-title>
-                <v-avatar size="64">
+                <v-avatar size="64" style="margin-right: 15px">
                     <img
                         :src=user.avatar
                     >
@@ -16,7 +17,7 @@
                 </v-card-subtitle>
             </v-card-title>
             <v-toolbar
-                color="indigo"
+                color="primary"
                 dark
             >
                 <v-toolbar-title>Bots</v-toolbar-title>
@@ -32,19 +33,14 @@
                 </v-btn>
             </v-toolbar>
             <v-list>
-                <v-list-item
-                v-for="(bot, i) in user.bots"
-                :key="i"
-                @click="goToBotView(bot)"
-                >
-                    <v-list-item-title>
-                    <RaceImage v-bind:race="bot.race"></RaceImage>
-                    </v-list-item-title>
-                    <v-list-item-title>{{ bot.name }}</v-list-item-title>
-                </v-list-item>       
+                <BotItem v-for="(bot, i) in user.bots"
+                    v-bind:bot="bot"
+                    :key="i"
+                    @click="goToBotView(bot)">
+                </BotItem>
             </v-list>
-        </v-card>
-    </div>  
+    </v-card>
+    </div>
 </template>
 
 <script lang="ts">
@@ -55,13 +51,15 @@ import { Container } from '../dao/Container'
 import { PersistenceType } from '../dao/PersistenceType'
 import { User } from '@/model/User'
 import { Bot } from '@/model/Bot'
-import RaceImage from '@/components/RaceImage'
+/* eslint-disable */
+// @ts-ignore
+import BotItem from '@/components/BotItem'
 
 export default Vue.extend({
     name: "User",
 
     components: {
-        RaceImage
+        BotItem
     },
 
     data: () => {
@@ -78,7 +76,6 @@ export default Vue.extend({
         this.id = this.$route.params.id;
         await this.getUser();
         this.twitterLink = "https://twitter.com/" + this.user?.twitter
-        console.log(this.user)
     },
 
     // When the user navigates from /user/foo to /user/bar, the same component instance will be reused
@@ -92,13 +89,7 @@ export default Vue.extend({
     methods: {
 
         async getUser(){
-            try {
-                this.user = await Container.getDAOFactory(PersistenceType.Firebase).getUserDAO().findOne(this.id);
-            }
-            catch(error) {
-                // TODO: go to 404
-                console.log(error)
-            }
+            this.user = await Container.getDAOFactory(PersistenceType.Firebase).getUserDAO().findOne(this.id);
         },
 
         goToBotCreation() {
@@ -107,8 +98,18 @@ export default Vue.extend({
 
         goToBotView(bot: Bot) {
             this.$router.push(`/bot/${bot.id}`)
-        }
+        },
     }
 
 })
 </script>
+
+<style scoped>
+ .back {
+    position:fixed;
+    top: 0;
+    right: -14%;
+    min-width: 100%;
+    min-height: 100%;
+ }
+</style>

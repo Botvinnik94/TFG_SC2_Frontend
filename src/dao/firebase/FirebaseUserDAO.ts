@@ -17,7 +17,7 @@ export const userConverter = {
         options: firebase.firestore.SnapshotOptions
     ): User {
         const data = snapshot.data(options)!;
-        return new User(data.name, snapshot.id, data.avatar, data.twitter, data.bots)
+        return new User(data.name, snapshot.id, data.avatar, data.twitter, data.bots, data.isAdmin)
     }
 }
 
@@ -85,11 +85,9 @@ export class FirebaseUserDAO extends AbstractUserDAO {
         target.bots = target.bots?.map((bot: Bot) => {
             return this.assignDefined({}, bot)
         });*/
-        console.log('before update')
         await Db.collection('users').withConverter(userConverter)
                                     .doc(user.id)
                                     .set(user, {merge: true});
-        console.log('after update')
     }
     
     delete(id: string): Promise<void> {

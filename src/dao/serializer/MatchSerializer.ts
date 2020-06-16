@@ -12,20 +12,21 @@ export class MatchSerializer implements ISerializer<IMatch> {
     unserialize(data: any): IMatch | undefined {
         if(data) {
             const players: Bot[] = data.players.map( (playerData: any) => {
-                return new Bot(playerData.id, playerData.name, playerData.uid,
+                return new Bot(playerData.name, playerData.uid,
                                playerData.script, playerData.race, playerData.elo,
-                               playerData.username, playerData.useravatar)
+                               playerData.id, playerData.username, playerData.useravatar, playerData.tournamentWins)
             });
             const games: IGame[] = data.games.map ( (gameData: any) => {
                 return {
-                    participant1: new Bot(gameData.participant1.id, gameData.participant1.name, gameData.participant1.uid,
+                    participant1: new Bot(gameData.participant1.name, gameData.participant1.uid,
                                           gameData.participant1.script, gameData.participant1.race, gameData.participant1.elo,
-                                          gameData.participant1.username, gameData.participant1.useravatar),
-                    participant2: new Bot(gameData.participant2.id, gameData.participant2.name, gameData.participant2.uid,
+                                          gameData.participant1.id, gameData.participant1.username, gameData.participant1.useravatar, gameData.participant1.tournamentWins),
+                    participant2: new Bot(gameData.participant2.name, gameData.participant2.uid,
                                           gameData.participant2.script, gameData.participant2.race, gameData.participant2.elo,
-                                          gameData.participant2.username, gameData.participant2.useravatar),
+                                          gameData.participant2.id, gameData.participant2.username, gameData.participant2.useravatar, gameData.participant2.tournamentWins),
                     winner: gameData.winner,
-                    map: gameData.map
+                    map: gameData.map,
+                    replayURL: gameData.replayURL
                 }
             });
             return {
