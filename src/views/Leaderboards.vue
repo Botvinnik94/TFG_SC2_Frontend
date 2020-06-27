@@ -13,6 +13,24 @@
         </v-toolbar>
         <v-card width="1000px" class="pa-md-4 mx-lg-auto">
             <v-list>
+                <v-skeleton-loader
+                    v-if="bestBots.length===0"
+                    ref="skeleton"
+                    type="list-item-avatar"
+                    class="mx-auto"
+                ></v-skeleton-loader>
+                <v-skeleton-loader
+                    v-if="bestBots.length===0"
+                    ref="skeleton"
+                    type="list-item-avatar"
+                    class="mx-auto"
+                ></v-skeleton-loader>
+                <v-skeleton-loader
+                    v-if="bestBots.length===0"
+                    ref="skeleton"
+                    type="list-item-avatar"
+                    class="mx-auto"
+                ></v-skeleton-loader>
                 <BotItem v-for="(bot, i) in bestBots"
                         v-bind:bot="bot"
                         :key="i"
@@ -24,6 +42,7 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable */
 import Vue from 'vue'
 // @ts-ignore
 import BotItem from '@/components/BotItem'

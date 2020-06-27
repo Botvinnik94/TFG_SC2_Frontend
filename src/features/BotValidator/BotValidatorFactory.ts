@@ -4,6 +4,11 @@ import { MockBotValidatorService } from './MockBotValidatorService';
 
 export class BotValidatorFactory {
 
+
+    /**
+     * Gets an instance of a Bot Validator
+     * @param {BotValidatorServiceType} type - The type of service used for validating
+     */
     public static getBotValidator(type: BotValidatorServiceType): IBotValidatorService {
 
         switch (type) {

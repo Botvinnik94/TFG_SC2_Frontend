@@ -10,13 +10,35 @@
         <v-icon>mdi-clock</v-icon>
             <v-toolbar-title>Recently finished matches</v-toolbar-title>
         </v-toolbar>
+        <v-skeleton-loader
+            v-if="recentMatches.length===0"
+            ref="skeleton"
+            type="list-item-avatar"
+            class="mx-auto"
+        ></v-skeleton-loader>
+        <v-skeleton-loader
+            v-if="recentMatches.length===0"
+            ref="skeleton"
+            type="list-item-avatar"
+            class="mx-auto"
+        ></v-skeleton-loader>
+        <v-skeleton-loader
+            v-if="recentMatches.length===0"
+            ref="skeleton"
+            type="list-item-avatar"
+            class="mx-auto"
+        ></v-skeleton-loader>
         <MatchItem v-for="(match, i) in recentMatches"
             :key="i" 
             v-bind:match="match"
             @click="goToMatchView(match)">
         </MatchItem>
     </v-list>
-    <CompetitionTable :tournaments="openTournaments" title="Tournaments open for registration" icon="mdi-tournament"></CompetitionTable>
+    <CompetitionTable 
+        :tournaments="openTournaments"
+        title="Tournaments open for registration"
+        icon="mdi-tournament">
+    </CompetitionTable>
   </v-card></div>
 </template>
 

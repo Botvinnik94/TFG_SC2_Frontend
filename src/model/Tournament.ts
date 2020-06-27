@@ -45,6 +45,10 @@ export class Tournament {
         this.formattedStartingDate = new Date(this.startingDate).toDateString();
     }
 
+    /**
+     * Translates a human formatted tournament type into a system readable tournament type
+     * @param {string} typeFormatted - Human formatted tournament type
+     */
     public static getType(typeFormatted: string): "round-robin" {
         switch(typeFormatted) {
             case "Round-Robin":
@@ -54,6 +58,10 @@ export class Tournament {
         }
     }
 
+    /**
+     * Translates a system readable tournament type into a system readable tournament type
+     * @param {string} type - System readable tournament type
+     */
     public static formatType(type: "round-robin"): string {
         switch(type) {
             case "round-robin":
@@ -63,6 +71,12 @@ export class Tournament {
         }
     }
 
+    /**
+     * Gets the matches from the tournament that meet certain criteria
+     * @param {"waiting" | "pending" | "ongoing" | "finished"} status - The status of the match
+     * @param {string} playerId - Id from a player participating in the match
+     * @param {number} roundNumber - Round where the matches took place 
+     */
     public findMatches(status?: "waiting" | "pending" | "ongoing" | "finished", playerId?: string, roundNumber?: number): IMatch[] {
         let matches: IMatch[] = []; 
 
@@ -84,6 +98,10 @@ export class Tournament {
         return matches;
     }
 
+    /**
+     * Returns the results of a player in the tournament
+     * @param {string} playerId - The id of the player
+     */
     public results(playerId: string): IRanking | undefined {
         return this.rankings.find( value => value.player.id === playerId );
     }

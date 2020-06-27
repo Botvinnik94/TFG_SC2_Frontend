@@ -22,6 +22,10 @@ export class FirebaseAuthService extends AbstractAuthService {
         })
     }
 
+    /**
+     * Signs in a user in the application with the Firebase Authentication service
+     * @param object - The abstract data object used for logging in
+     */
     public async signIn(object: any): Promise<void> {
         if(object != null && object.email != null && object.password != null) {
             try {
@@ -46,10 +50,16 @@ export class FirebaseAuthService extends AbstractAuthService {
         }
     }
 
+    /**
+     * Signs out the current user from the application
+     */
     public async signOut(): Promise<void> {
         await Auth.signOut()
     }
 
+    /**
+     * Checks if the current user is authorized for getting a page
+     */
     public async isAuthorized(): Promise<boolean> {
         return new Promise((resolve, reject) => {
             const unsubscribe = Auth.onAuthStateChanged(user => {
@@ -59,6 +69,9 @@ export class FirebaseAuthService extends AbstractAuthService {
         })
     }
 
+    /**
+     * Returns the access token used for authenticating requests
+     */
     public async getAccessToken(): Promise<string> {
         if(Auth.currentUser != undefined) {
             try {
@@ -73,6 +86,9 @@ export class FirebaseAuthService extends AbstractAuthService {
         }
     }
 
+    /**
+     * Request the authentication server a new access token
+     */
     public async refreshToken(): Promise<string> {
         if(Auth.currentUser != undefined) {
             try {
@@ -87,6 +103,9 @@ export class FirebaseAuthService extends AbstractAuthService {
         }
     }
 
+    /**
+     * Checks if the access token is still valid. Returns true if it is not valid anymore.
+     */
     public refreshShouldHappen(): boolean {
         return false;
     }
@@ -94,11 +113,20 @@ export class FirebaseAuthService extends AbstractAuthService {
 
     // Helpers
 
+    /**
+     * Gets the corresponding user from a Firebase User Credential
+     * @param {firebase.auth.UserCredential} userCredential - The firebase user credential
+     */
     protected async retrieveUserWithUserCredential(userCredential: firebase.auth.UserCredential): Promise<User> {
         const userDao = Container.getDAOFactory(PersistenceType.Firebase).getUserDAO();
         return await userDao.findOne(userCredential.user?.uid || '');
     }
 
+    /**
+     * Creates a user record in the database using data from the Firebase User Credential
+     * @param {firebase.auth.UserCredential} userCredential - The firebase user credential
+     * @param {User} user - The user class model in the application
+     */
     protected async createUserWithUserCredential(userCredential: firebase.auth.UserCredential, user?: User): Promise<User> {
         const userDao = Container.getDAOFactory(PersistenceType.Firebase).getUserDAO();
         if(user == null){

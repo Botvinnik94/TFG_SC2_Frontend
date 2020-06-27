@@ -6,6 +6,10 @@ import { DAOFactoryHttp } from './http/DAOFactoryHttp';
 
 export class Container {
 
+    /**
+     * Gets an instance of a Data Access Object Factory
+     * @param {PersistenceType} type - The type of persistence service used for creating elements in the factory
+     */
     static getDAOFactory(type: PersistenceType): IDAOFactory {
         switch (type) {
             case PersistenceType.Firebase:

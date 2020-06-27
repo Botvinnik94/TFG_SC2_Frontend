@@ -6,6 +6,10 @@ import { FirebaseTwitterAuthService } from './FirebaseTwitterAuthService';
 
 export class AuthServiceFactory {
 
+    /**
+     * Returns an instance of an Authentication Service Object
+     * @param {ProviderType} type - The provider for the authentication service
+     */
     public static getAuthService(type: ProviderType): AbstractAuthService {
         
         switch (type) {

@@ -1,3 +1,8 @@
+/**
+ * Returns an object without undefine attributes
+ * @param target - Object where all the non-undefined attributes are going to be saved
+ * @param sources - Objects subject to undefine attribute removal
+ */
 export function assignDefined(target: any, ...sources: any) {
     for (const source of sources) {
         for (const key of Object.keys(source)) {
